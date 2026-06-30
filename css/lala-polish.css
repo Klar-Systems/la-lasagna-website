@@ -1,21 +1,28 @@
-/* La Lasagna — light design "sandpaper" layer. Scoped, additive only. Does not
-   move or remove any content; only normalises sizing/spacing for consistency. */
+/* La Lasagna — light design "sandpaper" layer. Scoped, additive only. */
 
 /* --- "Our suppliers" logo wall (index) ------------------------------------
-   The brand logos ship at very different native sizes/aspect ratios, so the
-   wall looked ragged. Render every logo as an identical white tile (contain,
-   centred) WITHOUT changing which logos appear or their positions. Scoped to
-   the suppliers section id so the food photos elsewhere are untouched. */
+   The brand logos shipped at very different native sizes/aspect ratios and
+   were scattered across the Squarespace fluid grid (ragged 4-then-2-2-2 with
+   one logo dropped low). Render every logo as an identical white tile and lay
+   all ten in a clean 2-column x 5-row grid. No logo is removed or recoloured.
+   Scoped to the suppliers section id so food photos elsewhere are untouched. */
+
+/* neutralise Squarespace's fluid-image wrappers so each logo fills its cell */
+section[data-section-id="6989e82883d7eb240f7d7052"] .fluid-image-component-root,
+section[data-section-id="6989e82883d7eb240f7d7052"] .image-block-outer-wrapper,
+section[data-section-id="6989e82883d7eb240f7d7052"] .fluid-image-animation-wrapper,
 section[data-section-id="6989e82883d7eb240f7d7052"] .fluid-image-container,
-section[data-section-id="6989e82883d7eb240f7d7052"] .fluid-image-animation-wrapper {
-  position: static !important;
-  padding: 0 !important;
-  height: auto !important;
-  overflow: visible !important;
-}
+section[data-section-id="6989e82883d7eb240f7d7052"] .js-content-mode-element-wrapper,
 section[data-section-id="6989e82883d7eb240f7d7052"] .sqs-block-image-link {
+  position: static !important;
+  width: 100% !important;
+  max-width: none !important;
   height: auto !important;
-  text-align: center;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  inset: auto !important;
+  transform: none !important;
 }
 section[data-section-id="6989e82883d7eb240f7d7052"] img {
   position: static !important;
@@ -23,13 +30,26 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
   left: auto !important;
   top: auto !important;
   display: block !important;
-  width: 116px !important;
-  height: 84px !important;
-  margin: 0 auto !important;
+  width: 100% !important;
+  height: 88px !important;
+  margin: 0 !important;
   object-fit: contain !important;
   background: #fff;
   border-radius: 12px;
-  padding: 13px;
+  padding: 14px;
   box-sizing: border-box;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
+
+/* place all ten logos in a clean 2-col x 5-row grid (right side, clear of
+   the left video). Each rule targets one logo block by its fluid-engine id. */
+.fe-block-23236113e6d5f7db0203 { grid-column: 17 / 21 !important; grid-row: 16 / 18 !important; } /* RAO */
+.fe-block-8ea009048d74f04262f9 { grid-column: 21 / 25 !important; grid-row: 16 / 18 !important; } /* Aimo */
+.fe-block-8c39a5eb61d41108439f { grid-column: 17 / 21 !important; grid-row: 18 / 20 !important; } /* Kaffemania */
+.fe-block-c19900ecfc00e8f3f9f8 { grid-column: 21 / 25 !important; grid-row: 18 / 20 !important; } /* Ionia */
+.fe-block-7c7acc341b5c3b97ccc9 { grid-column: 17 / 21 !important; grid-row: 20 / 22 !important; } /* MultiCatering */
+.fe-block-e606077d3cbbb4056f41 { grid-column: 21 / 25 !important; grid-row: 20 / 22 !important; } /* Patu */
+.fe-block-94c6ea46b8a09245b966 { grid-column: 17 / 21 !important; grid-row: 22 / 24 !important; } /* Hartwall */
+.fe-block-daeec86a338b9291742e { grid-column: 21 / 25 !important; grid-row: 22 / 24 !important; } /* Wolt+ */
+.fe-block-92bdbc75b83ccb7ff288 { grid-column: 17 / 21 !important; grid-row: 24 / 26 !important; } /* Wotkins */
+.fe-block-482757efb0177483b89e { grid-column: 21 / 25 !important; grid-row: 24 / 26 !important; } /* BPF */
