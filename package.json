@@ -1,0 +1,9 @@
+{
+  "name": "la-lasagna-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "La Lasagna Helsinki — static site + reservation mail function",
+  "dependencies": {
+    "nodemailer": "^6.9.16"
+  }
+}
