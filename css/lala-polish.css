@@ -1,0 +1,35 @@
+/* La Lasagna — light design "sandpaper" layer. Scoped, additive only. Does not
+   move or remove any content; only normalises sizing/spacing for consistency. */
+
+/* --- "Our suppliers" logo wall (index) ------------------------------------
+   The brand logos ship at very different native sizes/aspect ratios, so the
+   wall looked ragged. Render every logo as an identical white tile (contain,
+   centred) WITHOUT changing which logos appear or their positions. Scoped to
+   the suppliers section id so the food photos elsewhere are untouched. */
+section[data-section-id="6989e82883d7eb240f7d7052"] .fluid-image-container,
+section[data-section-id="6989e82883d7eb240f7d7052"] .fluid-image-animation-wrapper {
+  position: static !important;
+  padding: 0 !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+section[data-section-id="6989e82883d7eb240f7d7052"] .sqs-block-image-link {
+  height: auto !important;
+  text-align: center;
+}
+section[data-section-id="6989e82883d7eb240f7d7052"] img {
+  position: static !important;
+  inset: auto !important;
+  left: auto !important;
+  top: auto !important;
+  display: block !important;
+  width: 116px !important;
+  height: 84px !important;
+  margin: 0 auto !important;
+  object-fit: contain !important;
+  background: #fff;
+  border-radius: 12px;
+  padding: 13px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
