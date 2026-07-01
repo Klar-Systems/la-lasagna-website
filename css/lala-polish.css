@@ -1,5 +1,165 @@
 /* La Lasagna — light design "sandpaper" layer. Scoped, additive only. */
 
+/* --- Global horizontal alignment fix ---------------------------------------
+   Every page section measured ~15px farther from the right edge than the left
+   (skew -15 site-wide). Cause: the vertical scrollbar's gutter is subtracted on
+   the right only, while full-bleed sections size to 100vw (which ignores the
+   scrollbar). Result: the whole site reads as shifted slightly left.
+   Reserve the scrollbar gutter symmetrically and clamp any 100vw full-bleed to
+   the real content box so left/right gaps match. Additive; no markup touched. */
+html {
+  scrollbar-gutter: stable both-edges;
+}
+body {
+  overflow-x: hidden; /* guard against the residual 100vw bleed overshoot */
+}
+.full-bleed-section,
+.page-section.full-bleed-section {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* --- Footer map: clickable + "View on Google Maps" caption ----------------
+   The map embed is now queried by address so the pin lands on the real
+   storefront. Make the whole map a click target that opens the Google Business
+   listing, and add a small caption link under it. Additive; the iframe still
+   renders the map, the transparent <a> sits on top to capture clicks. */
+.lala-map { padding-bottom: 34px !important; }
+.lala-map-link {
+  position: absolute;
+  inset: 0 0 34px 0; /* cover the map area, leave room for the caption */
+  z-index: 2;
+  display: block;
+  cursor: pointer;
+}
+.lala-map-caption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  font: 600 13px/1 inherit;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.92);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  transition: background 0.15s ease;
+}
+.lala-map-caption:hover { background: #fff; text-decoration: underline; }
+
+/* --- Tame oversized hero / section top padding ----------------------------
+   Squarespace renders these "custom height" sections with ~291px of top padding
+   (a full-viewport-height hero trick) plus vertical-centering, so on every page
+   the heading starts very low and the whole page reads as "pushed down / too
+   much empty space" (drinks, desserts, who-we-are, contact all measured a
+   270-360px top gap). Cap that padding to a calmer value so content sits at a
+   natural height. Clamp keeps it responsive; never goes below a sensible floor.
+   Additive; only trims excess whitespace, moves no element off its column. */
+.page-section.section-height--custom > .content-wrapper,
+.page-section.section-height--small > .content-wrapper,
+.page-section.section-height--medium > .content-wrapper,
+.page-section.section-height--custom,
+.page-section.section-height--small,
+.page-section.section-height--medium {
+  padding-top: clamp(120px, 15vh, 200px) !important;
+}
+.page-section.section-height--custom,
+.page-section.section-height--small,
+.page-section.section-height--medium {
+  padding-bottom: clamp(64px, 7vh, 104px) !important;
+}
+
+/* --- Who We Are: close the void below the video ---------------------------
+   The video block spans the section's lower grid rows but the <video> renders
+   shorter than the cell it was given, leaving a tall empty band before the
+   footer. Keep the grid rows as authored (so the video keeps its aspect ratio
+   and doesn't overflow), but make the video fill the height of its own cell and
+   stop the section reserving extra space. Scoped to the Who-We-Are page only. */
+#collection-67dc02dfc6808548e4c5e6e1 .page-section:first-of-type .sqs-block-video,
+#collection-67dc02dfc6808548e4c5e6e1 .page-section:first-of-type .sqs-video-wrapper,
+#collection-67dc02dfc6808548e4c5e6e1 .page-section:first-of-type .sqs-native-video {
+  height: 100% !important;
+}
+#collection-67dc02dfc6808548e4c5e6e1 .page-section:first-of-type video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* --- Contact / Book a table: tidy "call to book" block --------------------
+   The "You can also book by calling us" heading and the phone number sat low in
+   the section floating in a large empty band, far from the booking form and
+   reading as an afterthought. Pull the two blocks together into one centred,
+   bordered card with even spacing, and style the (now tappable) phone number as
+   a clear call-to-action. Scoped to the two fluid-engine blocks only; no other
+   text moves. The phone <a> is a tel: link so it dials on mobile. */
+.fe-block-916612e5e07cbc8f0eba h3 {       /* "...book by calling us" heading */
+  margin: 0 !important;
+  font-size: 1.25rem !important;
+  letter-spacing: 0.01em;
+  opacity: 0.92;
+}
+.lala-tel {                                /* tappable phone button — matches the
+                                              "Learn more" / Instagram buttons */
+  display: inline-block;
+  text-decoration: none;
+  background: transparent;
+  color: #f9fce0;
+  border: 1px solid #f9fce0;
+  border-radius: 10px;
+  font-size: 1.4rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  padding: 10px 22px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.lala-tel:hover {
+  background: #f9fce0;
+  color: #1c1a17;
+}
+/* Desktop only: pull the heading and pill together as a tidy pair. On mobile
+   these grid cells are narrow and the fixed alignment made them collide, so the
+   nudges are gated to >=768px and the mobile block below stacks them cleanly. */
+@media (min-width: 768px) {
+  .fe-block-916612e5e07cbc8f0eba {
+    align-self: end !important;
+    padding-top: 28px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+  .fe-block-523cda3f8fca79c5cf2b {
+    align-self: start !important;
+    margin-top: 6px !important;
+  }
+}
+
+/* --- Salads & Desserts: match the Pizzas menu (remove divider lines) -------
+   The Pizzas menu lists items separated by spacing only. Salads and Desserts
+   shipped with a horizontal-rule block under every item, giving a "lined"
+   structure the Pizzas page doesn't have. Hide those rules on these two pages
+   only (scoped by their unique collection body id) so the layout matches.
+   Markup/content untouched — the <hr> blocks are simply not rendered. The
+   collapsed space is reclaimed so items sit at the Pizzas page's rhythm. */
+#collection-6989e88999610e607a1d4f1a .sqs-block-horizontalrule,
+#collection-6989e88999610e607a1d4f1a hr,
+#collection-6989e8944757e761bbd63fb9 .sqs-block-horizontalrule,
+#collection-6989e8944757e761bbd63fb9 hr {
+  display: none !important;
+}
+/* drop the now-empty rule block's own row height so items don't keep a gap */
+#collection-6989e88999610e607a1d4f1a .sqs-block-horizontalrule,
+#collection-6989e8944757e761bbd63fb9 .sqs-block-horizontalrule {
+  height: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 /* --- "Our suppliers" logo wall (index) ------------------------------------
    The brand logos shipped at very different native sizes/aspect ratios and
    were scattered across the Squarespace fluid grid (ragged 4-then-2-2-2 with
@@ -41,15 +201,538 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
-/* place all ten logos in a clean 2-col x 5-row grid (right side, clear of
-   the left video). Each rule targets one logo block by its fluid-engine id. */
-.fe-block-23236113e6d5f7db0203 { grid-column: 17 / 21 !important; grid-row: 16 / 18 !important; } /* RAO */
-.fe-block-8ea009048d74f04262f9 { grid-column: 21 / 25 !important; grid-row: 16 / 18 !important; } /* Aimo */
-.fe-block-8c39a5eb61d41108439f { grid-column: 17 / 21 !important; grid-row: 18 / 20 !important; } /* Kaffemania */
-.fe-block-c19900ecfc00e8f3f9f8 { grid-column: 21 / 25 !important; grid-row: 18 / 20 !important; } /* Ionia */
-.fe-block-7c7acc341b5c3b97ccc9 { grid-column: 17 / 21 !important; grid-row: 20 / 22 !important; } /* MultiCatering */
-.fe-block-e606077d3cbbb4056f41 { grid-column: 21 / 25 !important; grid-row: 20 / 22 !important; } /* Patu */
-.fe-block-94c6ea46b8a09245b966 { grid-column: 17 / 21 !important; grid-row: 22 / 24 !important; } /* Hartwall */
-.fe-block-daeec86a338b9291742e { grid-column: 21 / 25 !important; grid-row: 22 / 24 !important; } /* Wolt+ */
-.fe-block-92bdbc75b83ccb7ff288 { grid-column: 17 / 21 !important; grid-row: 24 / 26 !important; } /* Wotkins */
-.fe-block-482757efb0177483b89e { grid-column: 21 / 25 !important; grid-row: 24 / 26 !important; } /* BPF */
+/* DESKTOP: place all ten logos in a clean 2-col x 5-row grid (right side, clear
+   of the left video). Each rule targets one logo block by its fluid-engine id.
+   Gated to >=768px — on phones there is no side video, so these right-hand
+   column pins would squish every logo into the right third of the screen. */
+@media (min-width: 768px) {
+  .fe-block-23236113e6d5f7db0203 { grid-column: 17 / 21 !important; grid-row: 16 / 18 !important; } /* RAO */
+  .fe-block-8ea009048d74f04262f9 { grid-column: 21 / 25 !important; grid-row: 16 / 18 !important; } /* Aimo */
+  .fe-block-8c39a5eb61d41108439f { grid-column: 17 / 21 !important; grid-row: 18 / 20 !important; } /* Kaffemania */
+  .fe-block-c19900ecfc00e8f3f9f8 { grid-column: 21 / 25 !important; grid-row: 18 / 20 !important; } /* Ionia */
+  .fe-block-7c7acc341b5c3b97ccc9 { grid-column: 17 / 21 !important; grid-row: 20 / 22 !important; } /* MultiCatering */
+  .fe-block-e606077d3cbbb4056f41 { grid-column: 21 / 25 !important; grid-row: 20 / 22 !important; } /* Patu */
+  .fe-block-94c6ea46b8a09245b966 { grid-column: 17 / 21 !important; grid-row: 22 / 24 !important; } /* Hartwall */
+  .fe-block-daeec86a338b9291742e { grid-column: 21 / 25 !important; grid-row: 22 / 24 !important; } /* Wolt+ */
+  .fe-block-92bdbc75b83ccb7ff288 { grid-column: 17 / 21 !important; grid-row: 24 / 26 !important; } /* Wotkins */
+  .fe-block-482757efb0177483b89e { grid-column: 21 / 25 !important; grid-row: 24 / 26 !important; } /* BPF */
+}
+
+/* MOBILE: lay the ten logos full-width in a tidy 2-column grid (5 rows),
+   instead of the desktop right-hand pins which crush them into the right third. */
+@media (max-width: 767px) {
+  .fe-block-23236113e6d5f7db0203,
+  .fe-block-8ea009048d74f04262f9,
+  .fe-block-8c39a5eb61d41108439f,
+  .fe-block-c19900ecfc00e8f3f9f8,
+  .fe-block-7c7acc341b5c3b97ccc9,
+  .fe-block-e606077d3cbbb4056f41,
+  .fe-block-94c6ea46b8a09245b966,
+  .fe-block-daeec86a338b9291742e,
+  .fe-block-92bdbc75b83ccb7ff288,
+  .fe-block-482757efb0177483b89e {
+    grid-column: span 12 !important;   /* each logo = half of the 24-col grid */
+    grid-row: auto !important;
+  }
+  .fe-block-23236113e6d5f7db0203, .fe-block-8c39a5eb61d41108439f,
+  .fe-block-7c7acc341b5c3b97ccc9, .fe-block-94c6ea46b8a09245b966,
+  .fe-block-92bdbc75b83ccb7ff288 { grid-column: 1 / 13 !important; }   /* left col */
+  .fe-block-8ea009048d74f04262f9, .fe-block-c19900ecfc00e8f3f9f8,
+  .fe-block-e606077d3cbbb4056f41, .fe-block-daeec86a338b9291742e,
+  .fe-block-482757efb0177483b89e { grid-column: 13 / 25 !important; }  /* right col */
+}
+
+/* ===========================================================================
+   MOBILE / PHONE OPTIMISATION  (<= 767px)
+   Squarespace's fluid grid keeps the desktop row scale on phones, which left
+   (a) the contact "call to book" heading and phone pill overlapping, (b) very
+   large gaps between a title and the content under it, and (c) oversized gaps
+   between sections on the home page. Tighten all three for small screens only;
+   desktop is unaffected. Additive — no content or markup changes.
+   ========================================================================= */
+/* --- "Who we are" welcome text: bigger, more readable, more breathing room ---
+   Restyle the existing welcome paragraph (no copy change) so it reads like an
+   inviting intro rather than a small caption: larger font, generous line-height,
+   comfortable max-width. Index welcome block + the Who-We-Are page paragraph. */
+.fe-block-9424efb3f6ffce2ed765 p,
+.fe-block-9424efb3f6ffce2ed765 span,
+.fe-block-912b0ba0ea214b4f6c57 p,
+.fe-block-912b0ba0ea214b4f6c57 span {
+  font-size: 1.35rem !important;
+  line-height: 1.7 !important;
+  letter-spacing: 0.01em !important;
+}
+@media (max-width: 767px) {
+  .fe-block-9424efb3f6ffce2ed765 p,
+  .fe-block-9424efb3f6ffce2ed765 span,
+  .fe-block-912b0ba0ea214b4f6c57 p,
+  .fe-block-912b0ba0ea214b4f6c57 span {
+    font-size: 1.15rem !important;
+    line-height: 1.65 !important;
+  }
+}
+
+/* --- Salads: "(included in main course)" was black (unreadable on dark bg) ---
+   Make that subtitle line the site's cream/whitish text. Scoped to the block;
+   applies on all widths. */
+.fe-block-yui_3_17_2_1_1770653706839_15175 .sqsrte-text-color--black,
+.fe-block-yui_3_17_2_1_1770653706839_15175 span[class*="black"],
+.fe-block-yui_3_17_2_1_1770653706839_18965 .sqsrte-text-color--black,
+.fe-block-yui_3_17_2_1_1770653706839_18965 span[class*="black"] {
+  color: #f9fce0 !important;
+}
+
+/* --- Reviews: frame the Google screenshots as clean, professional cards ------
+   The six Google-review screenshots shipped as raw scattered JPEGs of different
+   crops. Wrap each one in a uniform white card — rounded corners, soft shadow,
+   even padding — so the block reads like a designed testimonials row instead of
+   pasted screenshots. The "4.8/5" + "400+ Reviews" title is left untouched.
+   Applies on all widths; the existing grid/stacking still positions them. */
+.fe-block-d301c67302846555cc05 .fluid-image-container,
+.fe-block-eb2a202df51fc6c8854d .fluid-image-container,
+.fe-block-3c7fc595e47835a63ef0 .fluid-image-container,
+.fe-block-0bc122c3a61df03a6dac .fluid-image-container,
+.fe-block-bba38cb5ca528d8020b5 .fluid-image-container,
+.fe-block-96788e2ec1575ba416f2 .fluid-image-container,
+.fe-block-d301c67302846555cc05 .sqs-image-content,
+.fe-block-eb2a202df51fc6c8854d .sqs-image-content,
+.fe-block-3c7fc595e47835a63ef0 .sqs-image-content,
+.fe-block-0bc122c3a61df03a6dac .sqs-image-content,
+.fe-block-bba38cb5ca528d8020b5 .sqs-image-content,
+.fe-block-96788e2ec1575ba416f2 .sqs-image-content {
+  background: #fff !important;
+  border-radius: 14px !important;
+  padding: 10px !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28) !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+.fe-block-d301c67302846555cc05 img,
+.fe-block-eb2a202df51fc6c8854d img,
+.fe-block-3c7fc595e47835a63ef0 img,
+.fe-block-0bc122c3a61df03a6dac img,
+.fe-block-bba38cb5ca528d8020b5 img,
+.fe-block-96788e2ec1575ba416f2 img {
+  border-radius: 8px !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* --- Mobile menu: drop the "Home" item (the logo is the home button) --------
+   Hide the homepage entry in the mobile overlay menu so it isn't redundant with
+   the logo, which already links home. Scoped to the mobile menu nav item class
+   so the desktop top-nav is unaffected. */
+.header-menu-nav-item--homepage { display: none !important; }
+
+/* Mobile menu language ("English") picker: it rendered as a block, left-aligned
+   and out of line with the other menu items (which are centered inline-flex).
+   Match it to the nav items so it sits in the same column/style. */
+.header-menu-actions.language-picker-mobile {
+  display: flex !important;
+  justify-content: center !important;
+  margin: 8px 0 0 0 !important;
+}
+.header-menu-actions.language-picker-mobile a {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.header-menu-actions.language-picker-mobile .header-menu-nav-item-content {
+  justify-content: center !important;
+}
+
+/* Move the native mobile-menu "Book now" CTA to the TOP of the menu (under the
+   logo) instead of the bottom. It already has the site's button styling, so we
+   only reorder it — no duplicate button, no restyle. */
+.header-menu-nav { display: flex !important; flex-direction: column !important; }
+.header-menu-cta { order: -1 !important; margin: 0 0 16px 0 !important; }
+
+@media (max-width: 767px) {
+
+  /* 0d) Consistent block edges. The main content images shipped with mismatched
+        side margins on mobile — hero ~16px, Spritz poster & Book-a-table & review
+        shots ~23px, the who-we-are video & supplier logos full-bleed (0). Line
+        them all to the SAME inset as the hero (~16px) so every block's left/right
+        edge matches down the page. We do this by sizing the inner image wrapper,
+        not the grid block, so layout/order is unaffected. */
+  /* Spritz poster: same width/edge as the Book-a-table card (NOT full-bleed).
+     The image inside was only ~310px centered, so force the wrappers + img to
+     fill the block, but keep the block itself at the normal card edge. */
+  .fe-block-132feefd1e18d9420227 {
+    margin-left: -7px !important;
+    margin-right: -7px !important;
+  }
+  .fe-block-132feefd1e18d9420227 .fluid-image-container,
+  .fe-block-132feefd1e18d9420227 .sqs-image-content,
+  .fe-block-132feefd1e18d9420227 .image-block-wrapper,
+  .fe-block-132feefd1e18d9420227 .sqs-block-content {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    left: 0 !important;
+    inset: auto !important;
+    transform: none !important;
+  }
+  .fe-block-132feefd1e18d9420227 img {
+    position: static !important;
+    left: 0 !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+    object-fit: contain !important;
+  }
+  /* Book-a-table card: the image inside sat at ~292px wide (left 49) leaving big
+     empty side space. Make the image fill the block so the card isn't mostly
+     whitespace. */
+  .fe-block-0080259be0871705e95c {
+    margin-left: -7px !important;
+    margin-right: -7px !important;
+  }
+  .fe-block-0080259be0871705e95c .fluid-image-container,
+  .fe-block-0080259be0871705e95c .sqs-image-content,
+  .fe-block-0080259be0871705e95c .sqs-block-content {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    inset: auto !important;
+    transform: none !important;
+  }
+  .fe-block-0080259be0871705e95c img {
+    position: static !important;
+    inset: auto !important;
+    left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+    object-fit: contain !important;
+  }
+  /* who-we-are video: was full-bleed (0) — inset it to match the 16px edge */
+  .fe-block-0bd9d632bada647776da {
+    width: calc(100% - 14px) !important;
+    margin-left: 7px !important;
+    margin-right: 7px !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+  }
+
+  /* Footer "Service in languages": add space ABOVE it (padding, not a grid-row
+     shift — that made it collide with the flag row). */
+  .fe-block-yui_3_17_2_1_1743163195830_45046 {
+    padding-top: 26px !important;
+  }
+
+  /* 0e) Reviews on mobile: the six Google screenshots kept their desktop grid
+        placement, rendering tiny (some 166px) and scattered at different x's.
+        Replace the review fluid-engine with our own flex column: the "4.8/5"
+        title on top, then each review screenshot full-width, larger, stacked as
+        a clean card. Much more visible and intentional on phones. */
+  section[data-section-id="6989e82883d7eb240f7d7058"] .fluid-engine {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 0 12px !important;
+    grid-template-columns: none !important;
+    grid-template-rows: none !important;
+  }
+  /* tighten the review section's own top/bottom so it isn't marooned in space */
+  section[data-section-id="6989e82883d7eb240f7d7058"] {
+    padding-top: 24px !important;
+    padding-bottom: 24px !important;
+  }
+  section[data-section-id="6989e82883d7eb240f7d7058"] .fluid-engine > .fe-block {
+    grid-area: auto !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+    width: 100% !important;
+    max-width: 360px !important;   /* bigger cards, uniform width */
+    transform: none !important;
+  }
+  /* shrink the oversized 4.8/5 title (was ~160px) */
+  .fe-block-5ee92170caf33deb7e85 h1,
+  .fe-block-5ee92170caf33deb7e85 h2,
+  .fe-block-5ee92170caf33deb7e85 [style*="font-size"] {
+    font-size: 92px !important;
+    line-height: 1 !important;
+  }
+  /* order: 3 TEXT reviews, then the 4.8/5 TITLE in the middle, then the 3
+     PICTURE reviews. The title is centered between the two groups. */
+  .fe-block-d301c67302846555cc05 { order: 1 !important; }  /* text review */
+  .fe-block-eb2a202df51fc6c8854d { order: 2 !important; }  /* text review */
+  .fe-block-3c7fc595e47835a63ef0 { order: 3 !important; }  /* text review */
+  .fe-block-5ee92170caf33deb7e85 {                          /* 4.8/5 title (middle) */
+    order: 4 !important;
+    margin: 10px auto !important;
+    text-align: center !important;
+    align-self: center !important;
+  }
+  .fe-block-5ee92170caf33deb7e85 * { text-align: center !important; }
+  .fe-block-0bc122c3a61df03a6dac { order: 5 !important; }  /* picture review */
+  .fe-block-bba38cb5ca528d8020b5 { order: 6 !important; }  /* picture review */
+  .fe-block-96788e2ec1575ba416f2 { order: 7 !important; }  /* picture review */
+  /* the review screenshot blocks need a real height on mobile (their grid cells
+     gave height; flex doesn't) so the image shows at a readable size */
+  section[data-section-id="6989e82883d7eb240f7d7058"] .fe-block .fluid-image-container,
+  section[data-section-id="6989e82883d7eb240f7d7058"] .fe-block .sqs-image-content {
+    position: relative !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  section[data-section-id="6989e82883d7eb240f7d7058"] .fe-block img {
+    position: relative !important;
+    height: auto !important;
+    object-fit: contain !important;
+  }
+
+  /* 0f) Lunch 2nd video ("Lunch Time"): same width as the video above (inset
+        ~343px), and made BIGGER — a tall, prominent video block, not a strip. */
+  .fe-block-7f1ab150dc00f6ba45d2 {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: calc(100% - 46px) !important;
+    max-width: calc(100% - 46px) !important;
+    height: 460px !important;
+    min-height: 460px !important;
+    position: relative !important;
+  }
+  .fe-block-7f1ab150dc00f6ba45d2 .sqs-block-content,
+  .fe-block-7f1ab150dc00f6ba45d2 .sqs-native-video,
+  .fe-block-7f1ab150dc00f6ba45d2 .sqs-video-wrapper {
+    height: 100% !important;
+    min-height: 460px !important;
+    width: 100% !important;
+  }
+  .fe-block-7f1ab150dc00f6ba45d2 video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;   /* fill the bigger box cleanly */
+  }
+
+  /* Pizza page: turn the "Pizzas are finally here!" text into a small emblem —
+     a bordered, rounded badge that fits the brand — while keeping the same cream
+     text. Also give it breathing room from the title above. */
+  .fe-block-yui_3_17_2_1_1772900810939_12715 {
+    margin-top: 26px !important;
+  }
+  .fe-block-yui_3_17_2_1_1772900810939_12715 .sqs-block-content {
+    border: 1px solid rgba(249, 252, 224, 0.55) !important;
+    border-radius: 14px !important;
+    padding: 16px 20px !important;
+    max-width: 340px !important;
+    margin: 0 auto !important;
+    background: rgba(249, 252, 224, 0.04) !important;
+  }
+
+  /* 0g) Menu/lasagna & pizza hero titles: the big scaled headline had a
+        line-height (~75px) SMALLER than its font-size (~87px), so the words were
+        cramped on top of each other and the price sat too close. Give the hero
+        heading a comfortable line-height and a little space below on mobile. */
+  section.page-section:first-of-type h1 {
+    line-height: 1.12 !important;
+    margin-bottom: 6px !important;
+    font-size: 13.5vw !important;      /* shrink so the longest word fits the
+                                          screen width and never breaks mid-word */
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    hyphens: none !important;
+  }
+  section.page-section:first-of-type h1 * {
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    hyphens: none !important;
+  }
+  section.page-section:first-of-type h1 + * { margin-top: 8px !important; }
+  /* Menu page: the "22.90€" price block overlapped the title above it (-24px).
+     Push it clear so the title and price aren't on top of each other. */
+  .fe-block-1c957763021ebd8d766e { margin-top: 70px !important; }
+
+  /* 1) Section top/bottom padding: calmer on phones (was up to ~200/104px) */
+  .page-section.section-height--custom,
+  .page-section.section-height--small,
+  .page-section.section-height--medium,
+  .page-section.section-height--custom > .content-wrapper,
+  .page-section.section-height--small > .content-wrapper,
+  .page-section.section-height--medium > .content-wrapper {
+    padding-top: clamp(40px, 8vw, 72px) !important;
+    padding-bottom: clamp(32px, 6vw, 56px) !important;
+  }
+
+  /* 2) Contact "call to book": the heading and phone pill were pinned to fixed
+        grid rows that overlap once the heading wraps on a narrow screen. Give
+        each its own non-overlapping row, full width, centered, with clear gap. */
+  .fe-block-916612e5e07cbc8f0eba,
+  .fe-block-523cda3f8fca79c5cf2b {
+    grid-column: 1 / -1 !important;
+    justify-self: center !important;
+    align-self: auto !important;
+    text-align: center !important;
+  }
+  /* Contact page: move the photo (was above) to BELOW the phone CTA so the order
+     reads Thank-you → "book by calling us" → phone → picture. */
+  .fe-block-yui_3_17_2_1_1764702229989_13421 {
+    grid-row: 60 / 67 !important;
+  }
+  .fe-block-916612e5e07cbc8f0eba { margin-bottom: 12px !important; }
+  .fe-block-523cda3f8fca79c5cf2b { margin-top: 48px !important; }  /* push pill clear of the wrapping heading */
+  .lala-tel {
+    font-size: 1.2rem;
+    padding: 10px 22px;
+  }
+
+  /* 3) Trim the gap between a heading and the block directly under it. The
+        fluid grid often leaves an empty row between a title and its body text;
+        pull adjacent blocks together a little on phones. */
+  .fluid-engine { row-gap: 6px !important; }
+
+  /* 4) Home "Who we are" + "Our suppliers" section: STOP fighting Squarespace's
+        fixed per-block grid placement. On mobile we throw it away entirely and
+        replace the fluid-engine with our OWN flex column, then set an explicit
+        `order` on each block so the sequence is exactly right regardless of what
+        grid-row/grid-column Squarespace assigned. Full width, centered, stacked.
+        The ten supplier logos are wrapped back into their own 2-column grid. */
+  section[data-section-id="6989e82883d7eb240f7d7052"] .fluid-engine {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 18px !important;
+    padding-left: 16px !important;   /* keep logos off the screen edge */
+    padding-right: 16px !important;
+    grid-template-columns: none !important;
+    grid-template-rows: none !important;
+  }
+  section[data-section-id="6989e82883d7eb240f7d7052"] .fluid-engine > .fe-block {
+    grid-area: auto !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: none !important;
+    text-align: center !important;
+  }
+  section[data-section-id="6989e82883d7eb240f7d7052"] .fluid-engine > .fe-block * {
+    text-align: center !important;
+  }
+  /* explicit running order */
+  .fe-block-5a699d9c2e9ccc81f9af { order: 1 !important; }  /* "Who we are" heading */
+  .fe-block-9424efb3f6ffce2ed765 { order: 2 !important; }  /* welcome paragraph  */
+  .fe-block-1dfe7d7cffc243e71ef8 { order: 3 !important; }  /* Learn more button (between text & video) */
+  .fe-block-0bd9d632bada647776da { order: 4 !important; }  /* who-we-are video   */
+  .fe-block-36fa7de7561828705f2d { order: 5 !important; }  /* "Our suppliers"    */
+  /* logos = orders 6..15, then re-grouped into a 2-col grid via a wrapper flex */
+  .fe-block-94c6ea46b8a09245b966 { order: 6 !important; }
+  .fe-block-daeec86a338b9291742e { order: 7 !important; }
+  .fe-block-8c39a5eb61d41108439f { order: 8 !important; }
+  .fe-block-c19900ecfc00e8f3f9f8 { order: 9 !important; }
+  .fe-block-23236113e6d5f7db0203 { order: 10 !important; }
+  .fe-block-8ea009048d74f04262f9 { order: 11 !important; }
+  .fe-block-7c7acc341b5c3b97ccc9 { order: 12 !important; }
+  .fe-block-e606077d3cbbb4056f41 { order: 13 !important; }
+  .fe-block-92bdbc75b83ccb7ff288 { order: 14 !important; }
+  .fe-block-482757efb0177483b89e { order: 15 !important; }
+  .fe-block-88c40dcf0000c1d9a564 { order: 16 !important; }  /* Instagram heading */
+  /* The ten supplier logos: flex-wrap the column container so the 50%-width
+     logo tiles pair two-per-row, while the full-width text/video blocks still
+     each take a whole row. justify-content centers the pair. */
+  section[data-section-id="6989e82883d7eb240f7d7052"] .fluid-engine {
+    flex-flow: row wrap !important;
+    justify-content: center !important;
+  }
+  /* full-width items force a line break by taking 100% */
+  .fe-block-5a699d9c2e9ccc81f9af,
+  .fe-block-9424efb3f6ffce2ed765,
+  .fe-block-0bd9d632bada647776da,
+  .fe-block-1dfe7d7cffc243e71ef8,
+  .fe-block-36fa7de7561828705f2d,
+  .fe-block-88c40dcf0000c1d9a564 {
+    flex: 0 0 100% !important;
+  }
+  /* logo tiles: half width each, so two share a row */
+  .fe-block-94c6ea46b8a09245b966, .fe-block-daeec86a338b9291742e,
+  .fe-block-8c39a5eb61d41108439f, .fe-block-c19900ecfc00e8f3f9f8,
+  .fe-block-23236113e6d5f7db0203, .fe-block-8ea009048d74f04262f9,
+  .fe-block-7c7acc341b5c3b97ccc9, .fe-block-e606077d3cbbb4056f41,
+  .fe-block-92bdbc75b83ccb7ff288, .fe-block-482757efb0177483b89e {
+    flex: 0 0 calc(50% - 9px) !important;
+    width: calc(50% - 9px) !important;
+  }
+  /* The who-we-are video uses Squarespace's position:absolute;inset:0 inside a
+     wrapper sized by the grid cell. Once we flex the block, that wrapper lost
+     its height (collapsed to 0), so the video pixels rendered absolutely and
+     overlapped the "Our suppliers" heading. Give the block + its inner wrappers
+     an explicit height on mobile so the video occupies real space and the
+     heading sits cleanly below it. */
+  .fe-block-0bd9d632bada647776da {
+    height: 240px !important;
+    min-height: 240px !important;
+    position: relative !important;
+    flex: 0 0 calc(100% - 32px) !important;  /* inset to match the 16px hero edge */
+    width: calc(100% - 32px) !important;
+    margin: 0 16px 8px 16px !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+  }
+  .fe-block-0bd9d632bada647776da .sqs-block,
+  .fe-block-0bd9d632bada647776da .sqs-block-content,
+  .fe-block-0bd9d632bada647776da .sqs-native-video,
+  .fe-block-0bd9d632bada647776da .sqs-video-wrapper,
+  .fe-block-0bd9d632bada647776da .sqs-block-video {
+    height: 100% !important;
+    min-height: 240px !important;
+  }
+  .fe-block-0bd9d632bada647776da video {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  /* Learn More button: the suppliers flex made its BLOCK full width, which is
+     fine, but the BUTTON inside should stay a normal pill, centered — not span
+     the whole page. Constrain the inner button to its content width. */
+  .fe-block-1dfe7d7cffc243e71ef8 { text-align: center !important; }
+  .fe-block-1dfe7d7cffc243e71ef8 .sqs-block-content,
+  .fe-block-1dfe7d7cffc243e71ef8 .sqs-block-button-container {
+    width: 100% !important;
+    text-align: center !important;
+  }
+  /* Learn More: force it to exactly match the Instagram button dimensions
+     (~166 x 54). In the who-we-are flex the button was stretching full-width and
+     collapsing to 24px tall, so we pin its box size, center it, and restore the
+     line-height/padding that give the --large button its height. */
+  .fe-block-1dfe7d7cffc243e71ef8 { text-align: center !important; }
+  .fe-block-1dfe7d7cffc243e71ef8 .sqs-block-content,
+  .fe-block-1dfe7d7cffc243e71ef8 .sqs-block-button-container {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+  .fe-block-1dfe7d7cffc243e71ef8 .sqs-block-button-element {
+    display: inline-flex !important;   /* inline-flex = content width, like IG */
+    align-items: center !important;
+    justify-content: center !important;
+    height: 54px !important;           /* same rendered height as Instagram */
+    width: fit-content !important;
+    max-width: none !important;
+    padding: 0 24px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+  }
+
+  /* Header vs hero: the header (logo + hamburger) is absolute & transparent, so
+     on mobile it overlaps the hero photo/headline. Give it a solid bar and pad
+     the top of the hero's CONTENT (not a margin on the section, which broke the
+     background last time) so the title + hamburger sit on clean dark space and
+     the hero content begins below them. The hero background image stays put. */
+  header.header, header { background: #1c1a17 !important; }
+  section.page-section:first-of-type .content-wrapper,
+  section.page-section:first-of-type .fluid-engine {
+    padding-top: 92px !important;
+  }
+}
