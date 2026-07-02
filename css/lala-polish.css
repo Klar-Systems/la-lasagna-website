@@ -21,6 +21,87 @@ body {
   margin-right: auto !important;
 }
 
+/* --- Footer map: HOME PAGE ONLY -------------------------------------------
+   The footer (with its Google map) is shared across every page, so the map was
+   showing everywhere. It should appear on the home page only. Hide the map block
+   by default and re-show it just under the home collection id.
+   The footer is a fixed-row grid: the map spans rows 5–14, so simply hiding it
+   leaves ~250px of empty rows (a void between the logo and "Location"). To close
+   that on non-home pages, let the LOGO block span down through the map's rows so
+   it fills that space (centred) instead of leaving a gap. */
+.fe-block-yui_3_17_2_1_1742654682241_11007 { display: none !important; }
+#collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742654682241_11007 {
+  display: block !important;
+}
+/* The footer logo (block 17517) is a fluid image whose wrapper collapsed to ~1px,
+   so it read as a thin white "line" above Location. Give it a real height so the
+   logo actually shows, and on non-home pages let it span down through the (now
+   empty) map rows so it fills that space instead of leaving a void. */
+.fe-block-yui_3_17_2_1_1759752886027_17517 {
+  grid-row: 1 / 5 !important;    /* logo in its own rows */
+  align-self: center !important;
+}
+/* Non-home footer: the map spanned rows 5–14 and is hidden here, leaving a ~250px
+   void between the logo and Location. Shift every footer content block up by 10
+   rows so they sit right under the logo — the footer then looks identical to the
+   home page's (minus the map). Home page keeps the original rows (see below). */
+.fe-block-d639f4a15da30299b663 { grid-row: 5 / 9 !important; }    /* Location */
+.fe-block-d2d45668cd6794c15be3 { grid-row: 10 / 14 !important; }  /* Contact & Book */
+.fe-block-7080e82f7dc7d52c18f8 { grid-row: 15 / 22 !important; }  /* Opening hours */
+.fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 22 / 24 !important; }  /* Service in languages */
+.fe-block-yui_3_17_2_1_1743163195830_45464 { grid-row: 24 / 25 !important; }  /* flag */
+.fe-block-44beaf53ea176f18f3cc { grid-row: 24 / 25 !important; }  /* flag */
+.fe-block-38d78d35fb058f4c4d9a { grid-row: 24 / 25 !important; }  /* flag */
+.fe-block-e881b38985fed0837b6d { grid-row: 24 / 25 !important; }  /* flag */
+.fe-block-c57aa9ae05e49fef4e83 { grid-row: 24 / 25 !important; }  /* flag */
+.fe-block-f8378be50c8018e7f63f { grid-row: 25 / 26 !important; }  /* & Sign language */
+.fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 28 / 29 !important; }  /* © */
+/* After shifting content up, the footer grid still declared 38 rows, leaving ~300px
+   of empty rows below "© La Lasagna" (a big gap before the page bottom). Cap the
+   non-home footer grid to the rows we actually use so it ends right under the ©. */
+section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
+  grid-template-rows: repeat(28, 24px) !important;
+}
+#collection-6989e82883d7eb240f7d7043 section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
+  grid-template-rows: repeat(38, 24px) !important;   /* home keeps full height (map) */
+}
+
+/* Home page: restore the authored rows (map occupies 5–14). */
+#collection-6989e82883d7eb240f7d7043 .fe-block-d639f4a15da30299b663 { grid-row: 15 / 19 !important; }
+#collection-6989e82883d7eb240f7d7043 .fe-block-d2d45668cd6794c15be3 { grid-row: 20 / 24 !important; }
+#collection-6989e82883d7eb240f7d7043 .fe-block-7080e82f7dc7d52c18f8 { grid-row: 25 / 32 !important; }
+#collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 32 / 34 !important; }
+#collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45464,
+#collection-6989e82883d7eb240f7d7043 .fe-block-44beaf53ea176f18f3cc,
+#collection-6989e82883d7eb240f7d7043 .fe-block-38d78d35fb058f4c4d9a,
+#collection-6989e82883d7eb240f7d7043 .fe-block-e881b38985fed0837b6d,
+#collection-6989e82883d7eb240f7d7043 .fe-block-c57aa9ae05e49fef4e83 { grid-row: 34 / 35 !important; }
+#collection-6989e82883d7eb240f7d7043 .fe-block-f8378be50c8018e7f63f { grid-row: 35 / 36 !important; }
+#collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 38 / 39 !important; }
+.fe-block-yui_3_17_2_1_1759752886027_17517 .fluid-image-component-root,
+.fe-block-yui_3_17_2_1_1759752886027_17517 .fluid-image-container,
+.fe-block-yui_3_17_2_1_1759752886027_17517 .sqs-image-content,
+.fe-block-yui_3_17_2_1_1759752886027_17517 .js-content-mode-element-wrapper,
+.fe-block-yui_3_17_2_1_1759752886027_17517 .js-content-mode-element {
+  position: static !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  padding: 0 !important;
+  transform: none !important;
+}
+.fe-block-yui_3_17_2_1_1759752886027_17517 img {
+  position: static !important;
+  inset: auto !important;
+  display: block !important;
+  width: 60% !important;
+  max-width: 240px !important;
+  height: auto !important;
+  margin: 0 auto !important;
+  object-fit: contain !important;
+  transform: none !important;
+}
+
 /* --- Footer map: clickable + "View on Google Maps" caption ----------------
    The map embed is now queried by address so the pin lands on the real
    storefront. Make the whole map a click target that opens the Google Business
@@ -45,12 +126,16 @@ body {
   font: 600 13px/1 inherit;
   letter-spacing: 0.02em;
   text-decoration: none;
-  color: inherit;
-  background: rgba(255, 255, 255, 0.92);
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  /* Was a solid white bar with a top border — on pages/states where the map tiles
+     don't paint, that read as an ugly stray "white bar above Location". Make it a
+     subtle cream text link on a translucent dark strip instead, so it never looks
+     like a white bar. */
+  color: #f9fce0;
+  background: rgba(28, 26, 23, 0.55);
+  border-top: 0;
   transition: background 0.15s ease;
 }
-.lala-map-caption:hover { background: #fff; text-decoration: underline; }
+.lala-map-caption:hover { background: rgba(28, 26, 23, 0.8); text-decoration: underline; }
 
 /* --- Tame oversized hero / section top padding ----------------------------
    Squarespace renders these "custom height" sections with ~291px of top padding
@@ -110,8 +195,8 @@ body {
   display: inline-block;
   text-decoration: none;
   background: transparent;
-  color: #f9fce0;
-  border: 1px solid #f9fce0;
+  color: #ffffff !important;
+  border: 1px solid #ffffff;
   border-radius: 10px;
   font-size: 1.4rem;
   letter-spacing: 0.02em;
@@ -119,13 +204,20 @@ body {
   padding: 10px 22px;
   transition: background 0.15s ease, color 0.15s ease;
 }
-.lala-tel:hover {
-  background: #f9fce0;
-  color: #1c1a17;
-}
-/* Desktop only: pull the heading and pill together as a tidy pair. On mobile
-   these grid cells are narrow and the fixed alignment made them collide, so the
-   nudges are gated to >=768px and the mobile block below stacks them cleanly. */
+/* The number text is wrapped in Squarespace's .sqsrte-text-color--white span,
+   which resolves to hsl(var(--white-hsl)) (an off-white on this dark section) and
+   beats the <a>'s colour. Force the inner text pure white too. */
+.lala-tel,
+.lala-tel span,
+.lala-tel strong { color: #ffffff !important; }
+.lala-tel:hover,
+.lala-tel:hover span,
+.lala-tel:hover strong { background: #ffffff; color: #1c1a17 !important; }
+.lala-tel:hover { background: #ffffff; }
+/* Desktop only: pull the heading and pill together as a tidy pair. The two blocks
+   sit in adjacent grid rows; align the heading to the bottom of its cell and the
+   pill to the top of its (immediately following) cell, with only a small gap, so
+   the number sits right under "…book by calling us" instead of floating below. */
 @media (min-width: 768px) {
   .fe-block-916612e5e07cbc8f0eba {
     align-self: end !important;
@@ -134,8 +226,40 @@ body {
   }
   .fe-block-523cda3f8fca79c5cf2b {
     align-self: start !important;
-    margin-top: 6px !important;
+    margin-top: -6px !important;   /* pull the pill up snug under the heading */
   }
+}
+
+/* --- Salads & Desserts: one title, like the Lasagna page --------------------
+   These pages had TWO headings: the hero tagline AND a standalone category title
+   ("Side Salads" / "Desserts"). The Lasagna page has a single title, so the
+   duplicate category heading is hidden here (all widths). The price now sits
+   directly under the title with "(included in main course)" as the line beneath
+   it (reordered in the HTML), matching title -> price -> text -> menu. */
+.fe-block-9769df709e042ef3b3a7,   /* salads "Side Salads" heading */
+.fe-block-7f9fa2b42185fa5e6833 {  /* desserts "Desserts" heading */
+  display: none !important;
+}
+
+/* The original standalone hero down-arrow image on salads/desserts is replaced by
+   the ↓ we inject into the menu block, so hide it on ALL widths (was only hidden on
+   mobile, which left a duplicate arrow under the title on desktop). */
+.fe-block-yui_3_17_2_1_1770647053480_1189,   /* salads hero arrow */
+.fe-block-yui_3_17_2_1_1770647105161_1118 {  /* desserts hero arrow */
+  display: none !important;
+}
+
+/* The ↓ arrow injected between the "(included in main course)" line and the first
+   menu item — points down to the menu, matching the Lasagna page. */
+.lala-menu-arrow {
+  margin: 6px 0 14px !important;
+  line-height: 1 !important;
+}
+.lala-menu-arrow span {
+  display: inline-block;
+  font-size: 1.7rem;
+  font-weight: 400;
+  opacity: 0.9;
 }
 
 /* --- Salads & Desserts: match the Pizzas menu (remove divider lines) -------
@@ -280,6 +404,104 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
 .fe-block-yui_3_17_2_1_1770653706839_18965 .sqsrte-text-color--black,
 .fe-block-yui_3_17_2_1_1770653706839_18965 span[class*="black"] {
   color: #f9fce0 !important;
+}
+
+/* --- Salads & Desserts: match the Pizzas menu — item titles in CAPITALS ---------
+   Pizza items are typed in capitals in the copy; salads/desserts are title-case.
+   Uppercase them via CSS (no copy change) so all three menu pages read the same.
+   Applies to the heading rows in the menu blocks (item names + the price/included
+   subheadings); descriptions live in <p> and are left as normal case, like pizza.
+   All widths. */
+#collection-6989e88999610e607a1d4f1a .page-section:nth-of-type(2) h4,
+#collection-6989e8944757e761bbd63fb9 .page-section:nth-of-type(2) h4 {
+  text-transform: uppercase !important;
+}
+/* Desserts "each page one solid colour": item 1 was recoloured cream by the rule
+   above (it was --black in the shared block) while items 2 & 3 render red. Item 1
+   is now given the same red in the markup; keep the ↓ arrow cream/readable. */
+.lala-dessert-item1 { color: #e41e25 !important; }
+
+/* --- Salads & Desserts: even item spacing to match the Pizzas page --------------
+   Pizza items sit ~72px apart; salads had ~112-152px (uneven, driven by a varying
+   number of empty <p> spacer lines) and desserts ~12-18px (too tight). Collapse
+   those empty spacers and set ONE consistent gap above every menu heading so all
+   three pages share the Pizzas rhythm. The price line, "(included…)" and the ↓
+   arrow are excluded so only real item titles get the 72px lead. All widths. */
+#collection-6989e88999610e607a1d4f1a .page-section:nth-of-type(2) .sqs-html-content p:empty,
+#collection-6989e8944757e761bbd63fb9 .page-section:nth-of-type(2) .sqs-html-content p:empty {
+  margin: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  line-height: 0 !important;
+}
+#collection-6989e88999610e607a1d4f1a .page-section:nth-of-type(2) h4:not(.lala-included):not(.lala-menu-arrow),
+#collection-6989e8944757e761bbd63fb9 .page-section:nth-of-type(2) h4:not(.lala-included):not(.lala-menu-arrow) {
+  margin-top: 56px !important;
+}
+/* the very first heading (the price, right under the title/arrow) shouldn't get the
+   big item lead — it belongs to the header group, not the item list */
+#collection-6989e88999610e607a1d4f1a .page-section:nth-of-type(2) .sqs-html-content > h4:first-child,
+#collection-6989e8944757e761bbd63fb9 .page-section:nth-of-type(2) .sqs-html-content > h4:first-child {
+  margin-top: 0 !important;
+}
+
+/* The "(included in main course)" line under the price: keep it NORMAL case (the
+   uppercase rule above would otherwise capitalise it) and white. Selectors carry
+   the collection id so they beat the section-scoped uppercase rule. */
+#collection-6989e88999610e607a1d4f1a .page-section:nth-of-type(2) h4.lala-included,
+#collection-6989e8944757e761bbd63fb9 .page-section:nth-of-type(2) h4.lala-included,
+.lala-included { text-transform: none !important; }
+#collection-6989e88999610e607a1d4f1a .page-section:nth-of-type(2) h4.lala-included span,
+#collection-6989e8944757e761bbd63fb9 .page-section:nth-of-type(2) h4.lala-included span,
+.lala-included span { color: #f9fce0 !important; }
+
+/* --- Drinks: widen the drink photos to the same 16px border as other pages ------
+   They shipped narrow (~312px, ~39px inset). Push them out to 16px each side so
+   they read as full-width pictures like the lasagna/lunch photos. The poster gets
+   the same treatment. Scoped to the three drinks image blocks (NOT the footer
+   logo). Mobile only. */
+@media (max-width: 767px) {
+  .fe-block-yui_3_17_2_1_1773324078716_2395,   /* spritz poster */
+  .fe-block-82dcc74ef8bf9b55fbf9,              /* drinks_1 */
+  .fe-block-yui_3_17_2_1_1773324078716_2972 {  /* drinks_2 */
+    grid-column: 1 / -1 !important;
+    width: calc(100% - 32px) !important;
+    max-width: calc(100% - 32px) !important;
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+    justify-self: center !important;
+  }
+  .fe-block-yui_3_17_2_1_1773324078716_2395 .fluid-image-container,
+  .fe-block-yui_3_17_2_1_1773324078716_2395 .sqs-image-content,
+  .fe-block-yui_3_17_2_1_1773324078716_2395 .js-content-mode-element-wrapper,
+  .fe-block-yui_3_17_2_1_1773324078716_2395 .js-content-mode-element,
+  .fe-block-82dcc74ef8bf9b55fbf9 .fluid-image-container,
+  .fe-block-82dcc74ef8bf9b55fbf9 .sqs-image-content,
+  .fe-block-82dcc74ef8bf9b55fbf9 .js-content-mode-element-wrapper,
+  .fe-block-82dcc74ef8bf9b55fbf9 .js-content-mode-element,
+  .fe-block-yui_3_17_2_1_1773324078716_2972 .fluid-image-container,
+  .fe-block-yui_3_17_2_1_1773324078716_2972 .sqs-image-content,
+  .fe-block-yui_3_17_2_1_1773324078716_2972 .js-content-mode-element-wrapper,
+  .fe-block-yui_3_17_2_1_1773324078716_2972 .js-content-mode-element {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+  .fe-block-yui_3_17_2_1_1773324078716_2395 img,
+  .fe-block-82dcc74ef8bf9b55fbf9 img,
+  .fe-block-yui_3_17_2_1_1773324078716_2972 img {
+    position: static !important;
+    inset: auto !important;
+    left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+    object-fit: contain !important;
+  }
 }
 
 /* --- Reviews: frame the Google screenshots as clean, professional cards ------
@@ -489,28 +711,61 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     object-fit: contain !important;
   }
 
-  /* 0f) Lunch 2nd video ("Lunch Time"): same width as the video above (inset
-        ~343px), and made BIGGER — a tall, prominent video block, not a strip. */
+  /* 0f) Lunch 2nd video ("Lunch Time"): the source is a VERTICAL 1080x1920 clip.
+        It was previously forced into a 460px landscape box with object-fit:cover,
+        which cropped it to a thin strip and left a tall empty band below (the box
+        was 460px but the cropped video only filled ~194px). Show the FULL vertical
+        video instead: size the block to the real 9:16 aspect at the column width,
+        with object-fit:contain so nothing is cropped. Break it out of the fixed
+        grid rows so the section collapses to the video's true height and the next
+        content follows directly underneath (no dead space). */
   .fe-block-7f1ab150dc00f6ba45d2 {
+    grid-row: 1 / 2 !important;      /* single natural row — kills the reserved gap */
     margin-left: auto !important;
     margin-right: auto !important;
     width: calc(100% - 46px) !important;
     max-width: calc(100% - 46px) !important;
-    height: 460px !important;
-    min-height: 460px !important;
+    aspect-ratio: 9 / 16 !important; /* full vertical video, no crop */
+    height: auto !important;
+    min-height: 0 !important;
     position: relative !important;
   }
   .fe-block-7f1ab150dc00f6ba45d2 .sqs-block-content,
   .fe-block-7f1ab150dc00f6ba45d2 .sqs-native-video,
-  .fe-block-7f1ab150dc00f6ba45d2 .sqs-video-wrapper {
+  .fe-block-7f1ab150dc00f6ba45d2 .sqs-video-wrapper,
+  .fe-block-7f1ab150dc00f6ba45d2 .native-video-player,
+  .fe-block-7f1ab150dc00f6ba45d2 .video-player {
     height: 100% !important;
-    min-height: 460px !important;
+    min-height: 0 !important;
+    max-height: none !important;
     width: 100% !important;
+    padding-bottom: 0 !important;   /* kill Squarespace's aspect-ratio padding box */
+    aspect-ratio: auto !important;
   }
   .fe-block-7f1ab150dc00f6ba45d2 video {
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;   /* fill the bigger box cleanly */
+    object-fit: cover !important;   /* fill the full vertical box edge to edge */
+  }
+  /* Collapse the 2nd-video section so it wraps the video tightly and the picture
+     grid below starts right under it (was padded out to a fixed grid height). */
+  section[data-section-id="68839ebcd129343a80046393"] .fluid-engine {
+    grid-template-rows: auto !important;
+  }
+  section.page-section[data-section-id="68839ebcd129343a80046393"],
+  section.page-section[data-section-id="68839ebcd129343a80046393"] > .content-wrapper {
+    padding-top: 16px !important;
+    padding-bottom: 8px !important;
+  }
+  /* The picture masonry gallery sits in its own section right after the 2nd video.
+     Trim that section's top padding so the photos begin directly under the video
+     instead of after a wide blank band. (Selectors carry .page-section so they beat
+     the global section-height padding rule above.) */
+  section.page-section[data-section-id="67e563e06724a4311142e55e"],
+  section.page-section[data-section-id="67e563e06724a4311142e55e"] > .content-wrapper,
+  section.page-section[data-section-id="67e563e06724a4311142e55e"] .gallery-section-wrapper {
+    padding-top: 10px !important;
+    margin-top: 0 !important;
   }
 
   /* Pizza page: turn the "Pizzas are finally here!" text into a small emblem —
@@ -541,15 +796,182 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     overflow-wrap: normal !important;
     hyphens: none !important;
   }
+  /* Salads & Desserts hero titles: match the Pizzas page size (14.5vw) instead of
+     the slightly smaller default, so the three menu pages read consistently. */
+  #collection-6989e88999610e607a1d4f1a section.page-section:first-of-type h1,
+  #collection-6989e88999610e607a1d4f1a section.page-section:first-of-type h1 *,
+  #collection-6989e8944757e761bbd63fb9 section.page-section:first-of-type h1,
+  #collection-6989e8944757e761bbd63fb9 section.page-section:first-of-type h1 * {
+    font-size: 14.5vw !important;
+  }
   section.page-section:first-of-type h1 * {
     word-break: keep-all !important;
     overflow-wrap: normal !important;
     hyphens: none !important;
   }
   section.page-section:first-of-type h1 + * { margin-top: 8px !important; }
-  /* Menu page: the "22.90€" price block overlapped the title above it (-24px).
-     Push it clear so the title and price aren't on top of each other. */
-  .fe-block-1c957763021ebd8d766e { margin-top: 70px !important; }
+  /* Menu / lasagna hero: title, price, description and arrow were pinned to fixed
+     grid rows with big vertical gaps (the title block reserved 15 rows but its
+     text is short, so the price floated ~370px below it). Replace the hero grid
+     with a tight flex column on mobile so the order reads title -> price -> text
+     -> arrow with even, compact spacing. Ordered explicitly so it never depends on
+     the authored grid rows. */
+  #collection-6989f0bc5e0b8e771afd533a section.page-section:first-of-type .fluid-engine {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
+    grid-template-rows: none !important;
+    grid-template-columns: none !important;
+  }
+  #collection-6989f0bc5e0b8e771afd533a section.page-section:first-of-type .fluid-engine > .fe-block {
+    grid-area: auto !important;
+    grid-row: auto !important;
+    grid-column: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+  }
+  .fe-block-9ac47dfab2d39e3f6cef { order: 1 !important; }  /* title  */
+  .fe-block-1c957763021ebd8d766e { order: 2 !important; margin-top: 0 !important; } /* price */
+  .fe-block-287ff0953c5f7eb08246 { order: 3 !important; }  /* "price includes…" */
+  .fe-block-3ba62d6eec8cb8a2448e { order: 4 !important; }  /* down arrow */
+  /* The hero flex collapsed the arrow's fluid-image wrapper to 0px so the ↓ was
+     invisible on the Lasagna page. Give it an explicit size like the other pages. */
+  .fe-block-3ba62d6eec8cb8a2448e { margin-top: 8px !important; height: auto !important; }
+  .fe-block-3ba62d6eec8cb8a2448e .fluid-image-component-root,
+  .fe-block-3ba62d6eec8cb8a2448e .fluid-image-container,
+  .fe-block-3ba62d6eec8cb8a2448e .sqs-image-content,
+  .fe-block-3ba62d6eec8cb8a2448e .js-content-mode-element-wrapper,
+  .fe-block-3ba62d6eec8cb8a2448e .js-content-mode-element {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+  .fe-block-3ba62d6eec8cb8a2448e img {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    width: 26px !important;
+    height: 26px !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
+    transform: none !important;
+  }
+
+  /* Lasagna menu photos: they shipped narrow (~254px, ~68px inset each side). Widen
+     them to the same edge as every other page's pictures (~16px inset) so they run
+     out to the borders. Applies to all 12 lasagna cards. */
+  #collection-6989f0bc5e0b8e771afd533a .page-section:nth-of-type(2) .fe-block:has(img) {
+    grid-column: 1 / -1 !important;
+    width: calc(100% - 32px) !important;
+    max-width: calc(100% - 32px) !important;
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+    justify-self: center !important;
+  }
+  #collection-6989f0bc5e0b8e771afd533a .page-section:nth-of-type(2) .fe-block:has(img) .fluid-image-container,
+  #collection-6989f0bc5e0b8e771afd533a .page-section:nth-of-type(2) .fe-block:has(img) .sqs-image-content,
+  #collection-6989f0bc5e0b8e771afd533a .page-section:nth-of-type(2) .fe-block:has(img) .js-content-mode-element-wrapper,
+  #collection-6989f0bc5e0b8e771afd533a .page-section:nth-of-type(2) .fe-block:has(img) .js-content-mode-element {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+  #collection-6989f0bc5e0b8e771afd533a .page-section:nth-of-type(2) .fe-block:has(img) img {
+    position: static !important;
+    inset: auto !important;
+    left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+    object-fit: contain !important;
+  }
+
+  /* --- Salads & Desserts: match the Lasagna page rhythm -----------------------
+     Both pages shipped as: hero title -> big empty band + a down-arrow -> (in a
+     SEPARATE section) "(included in main course)" + price + the whole menu. That
+     read as two titles far apart with a large void between them. Bring it into the
+     Lasagna layout — ONE title, the price/description, then the menu — all tight
+     at the top. We (a) drop the dead arrow and collapse the hero's empty height,
+     and (b) pull the menu section up flush under the title. Scoped per page id. */
+  #collection-6989e88999610e607a1d4f1a .page-section:first-of-type .fluid-engine,
+  #collection-6989e8944757e761bbd63fb9 .page-section:first-of-type .fluid-engine {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+    grid-template-rows: none !important;
+    grid-template-columns: none !important;
+  }
+  #collection-6989e88999610e607a1d4f1a .page-section:first-of-type .fluid-engine > .fe-block,
+  #collection-6989e8944757e761bbd63fb9 .page-section:first-of-type .fluid-engine > .fe-block {
+    grid-area: auto !important;
+    grid-row: auto !important;
+    grid-column: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+  }
+  /* The old standalone hero down-arrow image is hidden; instead we inject a ↓ line
+     into the menu block itself (after "(included in main course)", before item 1)
+     so the arrow sits under the title/price/text and points at the menu — exactly
+     like the Lasagna page. See .lala-menu-arrow below. */
+  .fe-block-yui_3_17_2_1_1770647053480_1189,   /* salads hero arrow */
+  .fe-block-yui_3_17_2_1_1770647105161_1118 {  /* desserts hero arrow */
+    display: none !important;
+  }
+  /* pull the menu section flush up under the hero title */
+  #collection-6989e88999610e607a1d4f1a .page-section:nth-of-type(2),
+  #collection-6989e8944757e761bbd63fb9 .page-section:nth-of-type(2) {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+  #collection-6989e88999610e607a1d4f1a .page-section:nth-of-type(2) > .content-wrapper,
+  #collection-6989e8944757e761bbd63fb9 .page-section:nth-of-type(2) > .content-wrapper {
+    padding-top: 0 !important;
+  }
+  /* the menu blocks sit in a fluid grid with tall reserved rows before the first
+     line; flex-stack them tight so price + items follow immediately */
+  #collection-6989e88999610e607a1d4f1a .page-section:nth-of-type(2) .fluid-engine,
+  #collection-6989e8944757e761bbd63fb9 .page-section:nth-of-type(2) .fluid-engine {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 6px !important;
+    grid-template-rows: none !important;
+    grid-template-columns: none !important;
+    /* The flexed menu ran text edge-to-edge (0 inset); Pizza sits ~23px in. Pad the
+       menu so titles + descriptions stay within the same borders as every page. */
+    padding-left: 23px !important;
+    padding-right: 23px !important;
+    box-sizing: border-box !important;
+  }
+  #collection-6989e88999610e607a1d4f1a .page-section:nth-of-type(2) .fluid-engine > .fe-block,
+  #collection-6989e8944757e761bbd63fb9 .page-section:nth-of-type(2) .fluid-engine > .fe-block {
+    grid-area: auto !important;
+    grid-row: auto !important;
+    grid-column: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+  }
+  /* Desserts items 2 & 3 are their OWN blocks (not inside the item-1 block), so the
+     72px item lead can't come from in-block margins — give those blocks the same
+     gap between each other to match the Pizzas rhythm. */
+  .fe-block-1e0bc2f8cc4aaeae70d8 { margin-top: 60px !important; }  /* item 2 */
+  .fe-block-39a402d4ddd3b307ca38 { margin-top: 60px !important; }  /* item 3 */
 
   /* 1) Section top/bottom padding: calmer on phones (was up to ~200/104px) */
   .page-section.section-height--custom,
@@ -573,12 +995,58 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     text-align: center !important;
   }
   /* Contact page: move the photo (was above) to BELOW the phone CTA so the order
-     reads Thank-you → "book by calling us" → phone → picture. */
+     reads Thank-you → "book by calling us" → phone → picture. Render it big but
+     inset to the SAME 16px border as every other page's pictures — NOT edge to
+     edge. Force the wrappers + img to fill the block so it isn't a small centred
+     thumbnail. */
   .fe-block-yui_3_17_2_1_1764702229989_13421 {
-    grid-row: 60 / 67 !important;
+    grid-row: 55 / 62 !important;   /* right after the phone pill (row 54) so the
+                                       picture sits a matched gap below the number,
+                                       not ~156px lower */
+    grid-column: 1 / -1 !important;
+    width: calc(100% - 32px) !important;
+    max-width: calc(100% - 32px) !important;
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+    margin-top: 40px !important;    /* equal gap below the number (== above it) */
   }
-  .fe-block-916612e5e07cbc8f0eba { margin-bottom: 12px !important; }
-  .fe-block-523cda3f8fca79c5cf2b { margin-top: 48px !important; }  /* push pill clear of the wrapping heading */
+  .fe-block-yui_3_17_2_1_1764702229989_13421 .fluid-image-container,
+  .fe-block-yui_3_17_2_1_1764702229989_13421 .sqs-image-content,
+  .fe-block-yui_3_17_2_1_1764702229989_13421 .image-block-wrapper,
+  .fe-block-yui_3_17_2_1_1764702229989_13421 .sqs-block-content {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    left: 0 !important;
+    inset: auto !important;
+    transform: none !important;
+  }
+  .fe-block-yui_3_17_2_1_1764702229989_13421 img {
+    position: static !important;
+    inset: auto !important;
+    left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+    object-fit: cover !important;
+  }
+  /* The "…book by calling us" heading block reserves ~140px of grid-row height but
+     its single line of text is only ~21px tall, leaving ~100px of dead space below
+     the text before the phone pill. Collapse the block to its content height and
+     pull the pill up so the number sits right under the text. */
+  .fe-block-916612e5e07cbc8f0eba {
+    height: auto !important;
+    min-height: 0 !important;
+    align-self: start !important;
+    margin-bottom: 0 !important;
+  }
+  .fe-block-523cda3f8fca79c5cf2b {
+    align-self: start !important;
+    grid-row: 54 / 55 !important;   /* directly under the heading (row 53) instead
+                                       of its authored row 57, which floated it low */
+    margin-top: 14px !important;    /* number sits close under the text above it */
+  }
   .lala-tel {
     font-size: 1.2rem;
     padding: 10px 22px;
@@ -723,6 +1191,56 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     margin: 0 auto !important;
     box-sizing: border-box !important;
     white-space: nowrap !important;
+  }
+
+  /* Who-we-are page: even, language-proof rhythm around the video. The old fixed
+     negative margins were tuned to the 1-line English title; the longer Finnish
+     title ("Kuka me olemme") wraps to 2 lines and the video then overlapped it.
+     Replace the fixed grid with a flex column so spacing is content-driven and
+     identical in every language: title → video → text with equal gaps. */
+  #collection-67dc02dfc6808548e4c5e6e1 section[data-section-id="67dc02dfc6808548e4c5e6fb"] .fluid-engine {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 40px !important;
+    grid-template-rows: none !important;
+    grid-template-columns: none !important;
+  }
+  #collection-67dc02dfc6808548e4c5e6e1 section[data-section-id="67dc02dfc6808548e4c5e6fb"] .fluid-engine > .fe-block {
+    grid-area: auto !important;
+    grid-row: auto !important;
+    grid-column: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+  #collection-67dc02dfc6808548e4c5e6e1 .fe-block-0c8538983ff8894e33b6 { order: 1 !important; }  /* title */
+  #collection-67dc02dfc6808548e4c5e6e1 .fe-block-yui_3_17_2_1_1743093267110_3102 { order: 2 !important; }  /* video */
+  #collection-67dc02dfc6808548e4c5e6e1 .fe-block-912b0ba0ea214b4f6c57 { order: 3 !important; }  /* text */
+  /* The video uses absolute positioning inside its block, so in the flex column the
+     block collapsed to 0 height and the text rode up over the video. Give the block
+     the video's real aspect ratio so it holds its height. */
+  #collection-67dc02dfc6808548e4c5e6e1 .fe-block-yui_3_17_2_1_1743093267110_3102 {
+    aspect-ratio: 1908 / 1080 !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  #collection-67dc02dfc6808548e4c5e6e1 .fe-block-yui_3_17_2_1_1743093267110_3102 .sqs-block,
+  #collection-67dc02dfc6808548e4c5e6e1 .fe-block-yui_3_17_2_1_1743093267110_3102 .sqs-block-content,
+  #collection-67dc02dfc6808548e4c5e6e1 .fe-block-yui_3_17_2_1_1743093267110_3102 .sqs-block-video,
+  #collection-67dc02dfc6808548e4c5e6e1 .fe-block-yui_3_17_2_1_1743093267110_3102 .native-video-player,
+  #collection-67dc02dfc6808548e4c5e6e1 .fe-block-yui_3_17_2_1_1743093267110_3102 .video-player {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  #collection-67dc02dfc6808548e4c5e6e1 .fe-block-yui_3_17_2_1_1743093267110_3102 video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
   }
 
   /* Header vs hero: the header (logo + hamburger) is absolute & transparent, so
