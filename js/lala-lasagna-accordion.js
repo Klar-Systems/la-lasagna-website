@@ -105,11 +105,11 @@
       + "font-family:Sansita,'Sansita',serif;font-weight:700;font-style:normal;"
       + 'font-size:31.192px;line-height:35.1846px;letter-spacing:-0.62384px;'
       + 'color:rgb(228,30,37);text-transform:none;text-align:center;cursor:pointer;box-sizing:border-box;}'
-      // the FIRST title shouldn't have the big top gap (it sits right after the
-      // "Lasagnas" heading), and an open photo's next title needs the gap kept
-      + '.lala-acc-btn:first-of-type{margin-top:18px;}'
+      // space between the "Lasagnas" heading and the first lasagna title
+      + '.lala-acc-btn:first-of-type{margin-top:40px;}'
       + '.lala-acc-title{flex:0 1 auto;}'
-      + '.lala-acc-caret{flex:0 0 auto;font-size:.5em;line-height:1;transition:transform .18s ease;opacity:.75;}'
+      // caret is white (not red like the title), so it reads as a control
+      + '.lala-acc-caret{flex:0 0 auto;font-size:.5em;line-height:1;color:#f9fce0;transition:transform .18s ease;opacity:.85;}'
       + '.lala-acc-btn.lala-acc-open .lala-acc-caret{transform:rotate(180deg);}'
       // panel (the photo block): hidden until its button is opened
       + '.lala-acc-panel{display:none !important;}'
