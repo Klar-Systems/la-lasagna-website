@@ -816,7 +816,7 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
      with a tight flex column on mobile so the order reads title -> price -> text
      -> arrow with even, compact spacing. Ordered explicitly so it never depends on
      the authored grid rows. */
-  #collection-6989f0bc5e0b8e771afd533a section.page-section:first-of-type .fluid-engine {
+  #collection-6989f0bc5e0b8e771afd533a #sections section.page-section:first-of-type .fluid-engine {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -824,7 +824,7 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     grid-template-rows: none !important;
     grid-template-columns: none !important;
   }
-  #collection-6989f0bc5e0b8e771afd533a section.page-section:first-of-type .fluid-engine > .fe-block {
+  #collection-6989f0bc5e0b8e771afd533a #sections section.page-section:first-of-type .fluid-engine > .fe-block {
     grid-area: auto !important;
     grid-row: auto !important;
     grid-column: auto !important;
@@ -903,8 +903,8 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
      Lasagna layout — ONE title, the price/description, then the menu — all tight
      at the top. We (a) drop the dead arrow and collapse the hero's empty height,
      and (b) pull the menu section up flush under the title. Scoped per page id. */
-  #collection-6989e88999610e607a1d4f1a .page-section:first-of-type .fluid-engine,
-  #collection-6989e8944757e761bbd63fb9 .page-section:first-of-type .fluid-engine {
+  #collection-6989e88999610e607a1d4f1a #sections .page-section:first-of-type .fluid-engine,
+  #collection-6989e8944757e761bbd63fb9 #sections .page-section:first-of-type .fluid-engine {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -913,8 +913,8 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     grid-template-rows: none !important;
     grid-template-columns: none !important;
   }
-  #collection-6989e88999610e607a1d4f1a .page-section:first-of-type .fluid-engine > .fe-block,
-  #collection-6989e8944757e761bbd63fb9 .page-section:first-of-type .fluid-engine > .fe-block {
+  #collection-6989e88999610e607a1d4f1a #sections .page-section:first-of-type .fluid-engine > .fe-block,
+  #collection-6989e8944757e761bbd63fb9 #sections .page-section:first-of-type .fluid-engine > .fe-block {
     grid-area: auto !important;
     grid-row: auto !important;
     grid-column: auto !important;
