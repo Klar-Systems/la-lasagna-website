@@ -21,85 +21,80 @@ body {
   margin-right: auto !important;
 }
 
-/* --- Footer map: HOME PAGE ONLY -------------------------------------------
-   The footer (with its Google map) is shared across every page, so the map was
-   showing everywhere. It should appear on the home page only. Hide the map block
-   by default and re-show it just under the home collection id.
-   The footer is a fixed-row grid: the map spans rows 5–14, so simply hiding it
-   leaves ~250px of empty rows (a void between the logo and "Location"). To close
-   that on non-home pages, let the LOGO block span down through the map's rows so
-   it fills that space (centred) instead of leaving a gap. */
-.fe-block-yui_3_17_2_1_1742654682241_11007 { display: none !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742654682241_11007 {
-  display: block !important;
-}
-/* The footer logo (block 17517) is a fluid image whose wrapper collapsed to ~1px,
-   so it read as a thin white "line" above Location. Give it a real height so the
-   logo actually shows, and on non-home pages let it span down through the (now
-   empty) map rows so it fills that space instead of leaving a void. */
-.fe-block-yui_3_17_2_1_1759752886027_17517 {
-  grid-row: 1 / 5 !important;    /* logo in its own rows */
-  align-self: center !important;
-}
-/* Non-home footer: the map spanned rows 5–14 and is hidden here, leaving a ~250px
-   void between the logo and Location. Shift every footer content block up by 10
-   rows so they sit right under the logo — the footer then looks identical to the
-   home page's (minus the map). Home page keeps the original rows (see below). */
-.fe-block-d639f4a15da30299b663 { grid-row: 5 / 9 !important; }    /* Location */
-.fe-block-d2d45668cd6794c15be3 { grid-row: 10 / 14 !important; }  /* Contact & Book */
-.fe-block-7080e82f7dc7d52c18f8 { grid-row: 15 / 22 !important; }  /* Opening hours */
-.fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 22 / 24 !important; }  /* Service in languages */
-.fe-block-yui_3_17_2_1_1743163195830_45464 { grid-row: 24 / 25 !important; }  /* flag */
-.fe-block-44beaf53ea176f18f3cc { grid-row: 24 / 25 !important; }  /* flag */
-.fe-block-38d78d35fb058f4c4d9a { grid-row: 24 / 25 !important; }  /* flag */
-.fe-block-e881b38985fed0837b6d { grid-row: 24 / 25 !important; }  /* flag */
-.fe-block-c57aa9ae05e49fef4e83 { grid-row: 24 / 25 !important; }  /* flag */
-.fe-block-f8378be50c8018e7f63f { grid-row: 25 / 26 !important; }  /* & Sign language */
-.fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 28 / 29 !important; }  /* © */
-/* After shifting content up, the footer grid still declared 38 rows, leaving ~300px
-   of empty rows below "© La Lasagna" (a big gap before the page bottom). Cap the
-   non-home footer grid to the rows we actually use so it ends right under the ©. */
-section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
-  grid-template-rows: repeat(28, 24px) !important;
-}
-#collection-6989e82883d7eb240f7d7043 section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
-  grid-template-rows: repeat(38, 24px) !important;   /* home keeps full height (map) */
-}
-
-/* Home page: restore the authored rows (map occupies 5–14). */
-#collection-6989e82883d7eb240f7d7043 .fe-block-d639f4a15da30299b663 { grid-row: 15 / 19 !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-d2d45668cd6794c15be3 { grid-row: 20 / 24 !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-7080e82f7dc7d52c18f8 { grid-row: 25 / 32 !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 32 / 34 !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45464,
-#collection-6989e82883d7eb240f7d7043 .fe-block-44beaf53ea176f18f3cc,
-#collection-6989e82883d7eb240f7d7043 .fe-block-38d78d35fb058f4c4d9a,
-#collection-6989e82883d7eb240f7d7043 .fe-block-e881b38985fed0837b6d,
-#collection-6989e82883d7eb240f7d7043 .fe-block-c57aa9ae05e49fef4e83 { grid-row: 34 / 35 !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-f8378be50c8018e7f63f { grid-row: 35 / 36 !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 38 / 39 !important; }
-.fe-block-yui_3_17_2_1_1759752886027_17517 .fluid-image-component-root,
-.fe-block-yui_3_17_2_1_1759752886027_17517 .fluid-image-container,
-.fe-block-yui_3_17_2_1_1759752886027_17517 .sqs-image-content,
-.fe-block-yui_3_17_2_1_1759752886027_17517 .js-content-mode-element-wrapper,
-.fe-block-yui_3_17_2_1_1759752886027_17517 .js-content-mode-element {
-  position: static !important;
-  inset: auto !important;
-  width: 100% !important;
-  height: auto !important;
-  padding: 0 !important;
-  transform: none !important;
-}
-.fe-block-yui_3_17_2_1_1759752886027_17517 img {
-  position: static !important;
-  inset: auto !important;
-  display: block !important;
-  width: 60% !important;
-  max-width: 240px !important;
-  height: auto !important;
-  margin: 0 auto !important;
-  object-fit: contain !important;
-  transform: none !important;
+/* --- Footer map visibility ------------------------------------------------
+   The footer (with its Google map) is shared across every page.
+   • DESKTOP (>=768px): keep the ORIGINAL Squarespace footer exactly as authored —
+     the map shows on every page, columns laid out normally. We touch nothing here.
+   • MOBILE (<=767px): show the map on the HOME page only; on other pages hide it
+     and tidy the fixed-row grid so there's no void (see the mobile block below).
+   All the grid-row shuffling that follows is scoped to mobile so it never disturbs
+   the desktop footer layout. */
+@media (max-width: 767px) {
+  .fe-block-yui_3_17_2_1_1742654682241_11007 { display: none !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742654682241_11007 {
+    display: block !important;
+  }
+  /* footer logo: its fluid-image wrapper collapsed to ~1px (a thin white "line");
+     give it a real height so the logo shows */
+  .fe-block-yui_3_17_2_1_1759752886027_17517 {
+    grid-row: 1 / 5 !important;
+    align-self: center !important;
+  }
+  .fe-block-yui_3_17_2_1_1759752886027_17517 .fluid-image-component-root,
+  .fe-block-yui_3_17_2_1_1759752886027_17517 .fluid-image-container,
+  .fe-block-yui_3_17_2_1_1759752886027_17517 .sqs-image-content,
+  .fe-block-yui_3_17_2_1_1759752886027_17517 .js-content-mode-element-wrapper,
+  .fe-block-yui_3_17_2_1_1759752886027_17517 .js-content-mode-element {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+  .fe-block-yui_3_17_2_1_1759752886027_17517 img {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    width: 60% !important;
+    max-width: 240px !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
+    transform: none !important;
+  }
+  /* Non-home mobile footer: the hidden map left ~250px of empty rows, so shift the
+     content blocks up to sit under the logo. Home keeps the authored rows (map). */
+  .fe-block-d639f4a15da30299b663 { grid-row: 5 / 9 !important; }    /* Location */
+  .fe-block-d2d45668cd6794c15be3 { grid-row: 10 / 14 !important; }  /* Contact & Book */
+  .fe-block-7080e82f7dc7d52c18f8 { grid-row: 15 / 22 !important; }  /* Opening hours */
+  .fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 22 / 24 !important; }  /* Service in languages */
+  .fe-block-yui_3_17_2_1_1743163195830_45464 { grid-row: 24 / 25 !important; }  /* flag */
+  .fe-block-44beaf53ea176f18f3cc { grid-row: 24 / 25 !important; }  /* flag */
+  .fe-block-38d78d35fb058f4c4d9a { grid-row: 24 / 25 !important; }  /* flag */
+  .fe-block-e881b38985fed0837b6d { grid-row: 24 / 25 !important; }  /* flag */
+  .fe-block-c57aa9ae05e49fef4e83 { grid-row: 24 / 25 !important; }  /* flag */
+  .fe-block-f8378be50c8018e7f63f { grid-row: 25 / 26 !important; }  /* & Sign language */
+  .fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 28 / 29 !important; }  /* © */
+  /* cap the grid so the empty trailing rows below © collapse */
+  section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
+    grid-template-rows: repeat(28, 24px) !important;
+  }
+  /* Home page (mobile): map shows — keep the authored rows + full grid height. */
+  #collection-6989e82883d7eb240f7d7043 section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
+    grid-template-rows: repeat(38, 24px) !important;
+  }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-d639f4a15da30299b663 { grid-row: 15 / 19 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-d2d45668cd6794c15be3 { grid-row: 20 / 24 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-7080e82f7dc7d52c18f8 { grid-row: 25 / 32 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 32 / 34 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45464,
+  #collection-6989e82883d7eb240f7d7043 .fe-block-44beaf53ea176f18f3cc,
+  #collection-6989e82883d7eb240f7d7043 .fe-block-38d78d35fb058f4c4d9a,
+  #collection-6989e82883d7eb240f7d7043 .fe-block-e881b38985fed0837b6d,
+  #collection-6989e82883d7eb240f7d7043 .fe-block-c57aa9ae05e49fef4e83 { grid-row: 34 / 35 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-f8378be50c8018e7f63f { grid-row: 35 / 36 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 38 / 39 !important; }
 }
 
 /* --- Footer map: clickable + "View on Google Maps" caption ----------------
