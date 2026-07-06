@@ -209,19 +209,24 @@ body {
 .lala-tel:hover span,
 .lala-tel:hover strong { background: #ffffff; color: #1c1a17 !important; }
 .lala-tel:hover { background: #ffffff; }
-/* Desktop only: pull the heading and pill together as a tidy pair. The two blocks
-   sit in adjacent grid rows; align the heading to the bottom of its cell and the
-   pill to the top of its (immediately following) cell, with only a small gap, so
-   the number sits right under "…book by calling us" instead of floating below. */
+/* Desktop only: put the "You can also book by calling us" heading + phone number
+   ABOVE the photo (authored order was photo -> text -> number). Reassign their grid
+   rows so text+number sit just above the picture, and push the picture down below
+   them. Columns are kept from the authored layout. */
 @media (min-width: 768px) {
-  .fe-block-916612e5e07cbc8f0eba {
+  .fe-block-916612e5e07cbc8f0eba {           /* heading — above the picture */
+    grid-row: 30 / 32 !important;
     align-self: end !important;
     padding-top: 28px !important;
     border-top: 1px solid rgba(255, 255, 255, 0.14);
   }
-  .fe-block-523cda3f8fca79c5cf2b {
+  .fe-block-523cda3f8fca79c5cf2b {           /* phone pill — right under the heading */
+    grid-row: 32 / 34 !important;
     align-self: start !important;
-    margin-top: -6px !important;   /* pull the pill up snug under the heading */
+    margin-top: -6px !important;
+  }
+  .fe-block-yui_3_17_2_1_1764702229989_13421 {  /* picture — now below text+number */
+    grid-row: 35 / 45 !important;
   }
 }
 
