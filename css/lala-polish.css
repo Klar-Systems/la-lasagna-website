@@ -223,7 +223,7 @@ body {
   .fe-block-523cda3f8fca79c5cf2b {           /* phone pill — right under the heading */
     grid-row: 32 / 34 !important;
     align-self: start !important;
-    margin-top: -6px !important;
+    margin-top: 16px !important;   /* a little more space below the heading */
   }
   .fe-block-yui_3_17_2_1_1764702229989_13421 {  /* picture — now below text+number */
     grid-row: 35 / 45 !important;
