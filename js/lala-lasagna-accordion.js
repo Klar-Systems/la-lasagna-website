@@ -98,12 +98,13 @@
       + 'section[data-section-id="6989f0bc5e0b8e771afd5340"] .fluid-engine>.fe-block{'
       + 'grid-area:auto !important;grid-row:auto !important;grid-column:auto !important;'
       + 'width:100% !important;max-width:100% !important;height:auto !important;transform:none !important;}'
-      // plain titles styled like the Pizzas menu items (red, Sansita, no box) —
-      // just a caret to show they open. No border, no background.
-      + '.lala-acc-btn{display:flex;align-items:center;justify-content:center;gap:10px;'
+      // plain titles that match the Pizzas menu item titles EXACTLY (Sansita,
+      // ~31px, weight 700, red, centered, same letter-spacing/line-height). No box.
+      + '.lala-acc-btn{display:flex;align-items:baseline;justify-content:center;gap:10px;'
       + 'width:100%;margin:22px auto 0;padding:0;background:none;border:0;border-radius:0;'
-      + 'color:#e41e25;font-family:inherit;font-weight:700;font-size:1.95rem;line-height:1.15;'
-      + 'text-align:center;cursor:pointer;box-sizing:border-box;}'
+      + "font-family:Sansita,'Sansita',serif;font-weight:700;font-style:normal;"
+      + 'font-size:31.192px;line-height:35.1846px;letter-spacing:-0.62384px;'
+      + 'color:rgb(228,30,37);text-transform:none;text-align:center;cursor:pointer;box-sizing:border-box;}'
       + '.lala-acc-title{flex:0 1 auto;}'
       + '.lala-acc-caret{flex:0 0 auto;font-size:.5em;line-height:1;transition:transform .18s ease;opacity:.75;}'
       + '.lala-acc-btn.lala-acc-open .lala-acc-caret{transform:rotate(180deg);}'
