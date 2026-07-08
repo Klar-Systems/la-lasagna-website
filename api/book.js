@@ -73,10 +73,8 @@ module.exports = async (req, res) => {
 
   const name = `${first} ${last}`;
   const to = BOOKING_TO || "lalasagnahelsinki@gmail.com";
-  // A verified domain sender is preferred; the Resend test address lets the
-  // form work before the domain is verified (it can only deliver to the
-  // account owner's address, which is fine for first-run testing).
-  const from = BOOKING_FROM || "La Lasagna <onboarding@resend.dev>";
+  // lalasagnahelsinki.com is verified in Resend, so default to sending from it.
+  const from = BOOKING_FROM || "La Lasagna <reservations@lalasagnahelsinki.com>";
 
   const resend = new Resend(RESEND_API_KEY);
 
