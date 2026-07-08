@@ -60,7 +60,10 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const { RESEND_API_KEY, BOOKING_TO, BOOKING_FROM } = process.env;
+  // Accept the key under either name so it works whether the Vercel env var is
+  // called RESEND_API_KEY or just "resend".
+  const RESEND_API_KEY = process.env.RESEND_API_KEY || process.env.resend;
+  const { BOOKING_TO, BOOKING_FROM } = process.env;
   if (!RESEND_API_KEY) {
     // Until the Resend API key is added in Vercel, fail clearly (no crash).
     res.status(503).json({ ok: false, error: "Reservation email is not configured yet." });
