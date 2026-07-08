@@ -60,9 +60,10 @@ module.exports = async (req, res) => {
     return;
   }
 
-  // Accept the key under either name so it works whether the Vercel env var is
-  // called RESEND_API_KEY or just "resend".
-  const RESEND_API_KEY = process.env.RESEND_API_KEY || process.env.resend;
+  // Accept the key under any of the names it may have been given in the
+  // Vercel dashboard (env vars are case-sensitive).
+  const RESEND_API_KEY =
+    process.env.RESEND_API_KEY || process.env.Resend || process.env.resend || process.env.RESEND;
   const { BOOKING_TO, BOOKING_FROM } = process.env;
   if (!RESEND_API_KEY) {
     // Until the Resend API key is added in Vercel, fail clearly (no crash).
