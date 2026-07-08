@@ -4,6 +4,6 @@
   "private": true,
   "description": "La Lasagna Helsinki — static site + reservation mail function",
   "dependencies": {
-    "nodemailer": "^6.9.16"
+    "resend": "^4.8.0"
   }
 }
