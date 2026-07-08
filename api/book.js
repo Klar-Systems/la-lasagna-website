@@ -1,9 +1,11 @@
 // Vercel serverless function: receive the contact/reservation form and email it
-// to the restaurant via their SMTP. Credentials come from environment variables
+// to the restaurant via Resend. Credentials come from environment variables
 // (set in the Vercel dashboard), never hard-coded:
-//   SMTP_HOST, SMTP_PORT (default 587), SMTP_SECURE ("true" for 465),
-//   SMTP_USER, SMTP_PASS, BOOKING_TO (recipient), BOOKING_FROM (optional From).
-const nodemailer = require("nodemailer");
+//   RESEND_API_KEY (required),
+//   BOOKING_TO (recipient, defaults to the restaurant Gmail),
+//   BOOKING_FROM (verified sender, e.g. reservations@lalasagnahelsinki.com;
+//                 falls back to Resend's test address for first-run testing).
+const { Resend } = require("resend");
 
 function esc(s) {
   return String(s).replace(/[&<>"]/g, (c) =>
@@ -58,28 +60,25 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const { SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS, BOOKING_TO, BOOKING_FROM } = process.env;
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
-    // Until the SMTP credentials are added in Vercel, fail clearly (no crash).
+  const { RESEND_API_KEY, BOOKING_TO, BOOKING_FROM } = process.env;
+  if (!RESEND_API_KEY) {
+    // Until the Resend API key is added in Vercel, fail clearly (no crash).
     res.status(503).json({ ok: false, error: "Reservation email is not configured yet." });
     return;
   }
 
-  const port = Number(SMTP_PORT || 587);
-  const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port,
-    secure: SMTP_SECURE ? SMTP_SECURE === "true" : port === 465,
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
-  });
-
   const name = `${first} ${last}`;
-  const to = BOOKING_TO || SMTP_USER;
-  const from = BOOKING_FROM || SMTP_USER;
+  const to = BOOKING_TO || "lalasagnahelsinki@gmail.com";
+  // A verified domain sender is preferred; the Resend test address lets the
+  // form work before the domain is verified (it can only deliver to the
+  // account owner's address, which is fine for first-run testing).
+  const from = BOOKING_FROM || "La Lasagna <onboarding@resend.dev>";
+
+  const resend = new Resend(RESEND_API_KEY);
 
   try {
-    await transporter.sendMail({
-      from: `"La Lasagna website" <${from}>`,
+    const { error } = await resend.emails.send({
+      from,
       to,
       replyTo: `"${name}" <${email}>`,
       subject: `New table reservation — ${name}`,
@@ -89,9 +88,10 @@ module.exports = async (req, res) => {
 <strong>Email:</strong> <a href="mailto:${esc(email)}">${esc(email)}</a></p>
 <p><strong>Message:</strong><br>${esc(message).replace(/\n/g, "<br>")}</p>`,
     });
+    if (error) throw new Error(error.message || "Resend error");
     res.status(200).json({ ok: true });
   } catch (err) {
-    console.error("book: sendMail failed:", err && err.message);
+    console.error("book: send failed:", err && err.message);
     res.status(502).json({ ok: false, error: "Could not send your request right now. Please email or call us." });
   }
 };
