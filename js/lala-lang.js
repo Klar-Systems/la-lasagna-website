@@ -192,3 +192,118 @@
   if(document.readyState!=='loading') init();
   else document.addEventListener('DOMContentLoaded', init);
 })();
+
+/* ============================================================
+   Mobile nav (burger) — reimplemented locally.
+   The Squarespace site-bundle used to toggle the mobile menu by
+   adding `header--menu-open` to <body>. That bundle is removed,
+   so drive the same class here. The existing CSS
+   (`.header--menu-open .header-menu{opacity:1;visibility:visible}`)
+   handles the visual open/close.
+   ============================================================ */
+(function(){
+  function ready(fn){
+    if(document.readyState!=='loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+  }
+  ready(function(){
+    var OPEN='header--menu-open';
+    function close(){ document.body.classList.remove(OPEN); }
+    var btns=document.querySelectorAll('.header-burger-btn, [data-test="header-burger"]');
+    Array.prototype.forEach.call(btns, function(b){
+      b.addEventListener('click', function(ev){
+        ev.preventDefault();
+        document.body.classList.toggle(OPEN);
+      });
+    });
+    // Close when a link inside the mobile overlay is tapped.
+    var links=document.querySelectorAll('.header-menu a[href]');
+    Array.prototype.forEach.call(links, function(a){
+      a.addEventListener('click', close);
+    });
+    // Esc closes the overlay.
+    document.addEventListener('keydown', function(ev){
+      if(ev.key==='Escape' || ev.keyCode===27) close();
+    });
+  });
+})();
+
+/* ============================================================
+   Masonry gallery balancer.
+   The removed Squarespace JS laid gallery tiles into a balanced
+   two-column masonry. css/lala-polish.css turns .gallery-masonry-wrapper
+   into a 6px-row grid; here we give each tile a grid-row span computed
+   from its rendered height so the columns pack tightly and evenly.
+   ============================================================ */
+(function(){
+  var ROW = 6, GAP = 10;
+  function layout(){
+    var wraps = document.querySelectorAll('.gallery-masonry-wrapper');
+    Array.prototype.forEach.call(wraps, function(w){
+      var items = w.querySelectorAll('.gallery-masonry-item');
+      Array.prototype.forEach.call(items, function(it){
+        it.style.gridRowEnd = 'auto';
+        var h = it.getBoundingClientRect().height;
+        // ceil, not round: rounding down leaves the tile a few px short of its
+        // image height so it overflows onto the tile below. Requires the wrapper
+        // to declare row-gap:GAP (see css/lala-polish.css).
+        var span = Math.max(1, Math.ceil((h + GAP) / (ROW + GAP)));
+        it.style.gridRowEnd = 'span ' + span;
+      });
+    });
+  }
+  function schedule(){
+    if (!document.querySelector('.gallery-masonry-wrapper')) return;
+    layout();
+    // Re-run once images have decoded (heights change after load).
+    Array.prototype.forEach.call(document.images, function(img){
+      if (!img.complete) img.addEventListener('load', layout, { once: true });
+    });
+  }
+  if (document.readyState !== 'loading') schedule();
+  else document.addEventListener('DOMContentLoaded', schedule);
+  window.addEventListener('load', layout);
+  var t;
+  window.addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(layout, 150); });
+})();
+
+/* ============================================================
+   Review-card sizing.
+   The six Google-review screenshots are framed as white cards
+   (see css/lala-polish.css) with object-fit:cover. That only shows the
+   whole screenshot when the card's box matches the image's aspect ratio —
+   which the removed Squarespace JS used to set. Restore it here, scoped to
+   the review images only, so each card sizes to its screenshot and cover
+   fills it with no crop. Nothing else on the page is touched.
+   ============================================================ */
+(function(){
+  function ratio(img){
+    var dim = img.getAttribute('data-image-dimensions');
+    if (dim && /^\d+x\d+$/.test(dim)) { var p = dim.split('x'); return p[0] + ' / ' + p[1]; }
+    if (img.naturalWidth && img.naturalHeight) return img.naturalWidth + ' / ' + img.naturalHeight;
+    return null;
+  }
+  function sizeReviews(){
+    var imgs = document.querySelectorAll('img[src*="la_lasagna_google"]');
+    Array.prototype.forEach.call(imgs, function(img){
+      var box = img.closest('.sqs-image-content') || img.closest('.fluid-image-container');
+      if (!box) return;
+      var ar = ratio(img);
+      if (!ar) return;
+      box.style.aspectRatio = ar;
+      box.style.height = 'auto';
+    });
+  }
+  function schedule(){
+    if (!document.querySelector('img[src*="la_lasagna_google"]')) return;
+    sizeReviews();
+    Array.prototype.forEach.call(document.querySelectorAll('img[src*="la_lasagna_google"]'), function(img){
+      if (!img.complete) img.addEventListener('load', sizeReviews, { once: true });
+    });
+  }
+  if (document.readyState !== 'loading') schedule();
+  else document.addEventListener('DOMContentLoaded', schedule);
+  window.addEventListener('load', sizeReviews);
+  var t;
+  window.addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(sizeReviews, 150); });
+})();

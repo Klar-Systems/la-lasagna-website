@@ -21,63 +21,14 @@ body {
   margin-right: auto !important;
 }
 
-/* --- Footer map: HOME PAGE ONLY -------------------------------------------
-   The footer (with its Google map) is shared across every page, so the map was
-   showing everywhere. It should appear on the home page only. Hide the map block
-   by default and re-show it just under the home collection id.
-   The footer is a fixed-row grid: the map spans rows 5–14, so simply hiding it
-   leaves ~250px of empty rows (a void between the logo and "Location"). To close
-   that on non-home pages, let the LOGO block span down through the map's rows so
-   it fills that space (centred) instead of leaving a gap. */
-.fe-block-yui_3_17_2_1_1742654682241_11007 { display: none !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742654682241_11007 {
-  display: block !important;
-}
-/* The footer logo (block 17517) is a fluid image whose wrapper collapsed to ~1px,
-   so it read as a thin white "line" above Location. Give it a real height so the
-   logo actually shows, and on non-home pages let it span down through the (now
-   empty) map rows so it fills that space instead of leaving a void. */
-.fe-block-yui_3_17_2_1_1759752886027_17517 {
-  grid-row: 1 / 5 !important;    /* logo in its own rows */
-  align-self: center !important;
-}
-/* Non-home footer: the map spanned rows 5–14 and is hidden here, leaving a ~250px
-   void between the logo and Location. Shift every footer content block up by 10
-   rows so they sit right under the logo — the footer then looks identical to the
-   home page's (minus the map). Home page keeps the original rows (see below). */
-.fe-block-d639f4a15da30299b663 { grid-row: 5 / 9 !important; }    /* Location */
-.fe-block-d2d45668cd6794c15be3 { grid-row: 10 / 14 !important; }  /* Contact & Book */
-.fe-block-7080e82f7dc7d52c18f8 { grid-row: 15 / 22 !important; }  /* Opening hours */
-.fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 22 / 24 !important; }  /* Service in languages */
-.fe-block-yui_3_17_2_1_1743163195830_45464 { grid-row: 24 / 25 !important; }  /* flag */
-.fe-block-44beaf53ea176f18f3cc { grid-row: 24 / 25 !important; }  /* flag */
-.fe-block-38d78d35fb058f4c4d9a { grid-row: 24 / 25 !important; }  /* flag */
-.fe-block-e881b38985fed0837b6d { grid-row: 24 / 25 !important; }  /* flag */
-.fe-block-c57aa9ae05e49fef4e83 { grid-row: 24 / 25 !important; }  /* flag */
-.fe-block-f8378be50c8018e7f63f { grid-row: 25 / 26 !important; }  /* & Sign language */
-.fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 28 / 29 !important; }  /* © */
-/* After shifting content up, the footer grid still declared 38 rows, leaving ~300px
-   of empty rows below "© La Lasagna" (a big gap before the page bottom). Cap the
-   non-home footer grid to the rows we actually use so it ends right under the ©. */
-section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
-  grid-template-rows: repeat(28, 24px) !important;
-}
-#collection-6989e82883d7eb240f7d7043 section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
-  grid-template-rows: repeat(38, 24px) !important;   /* home keeps full height (map) */
-}
-
-/* Home page: restore the authored rows (map occupies 5–14). */
-#collection-6989e82883d7eb240f7d7043 .fe-block-d639f4a15da30299b663 { grid-row: 15 / 19 !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-d2d45668cd6794c15be3 { grid-row: 20 / 24 !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-7080e82f7dc7d52c18f8 { grid-row: 25 / 32 !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 32 / 34 !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45464,
-#collection-6989e82883d7eb240f7d7043 .fe-block-44beaf53ea176f18f3cc,
-#collection-6989e82883d7eb240f7d7043 .fe-block-38d78d35fb058f4c4d9a,
-#collection-6989e82883d7eb240f7d7043 .fe-block-e881b38985fed0837b6d,
-#collection-6989e82883d7eb240f7d7043 .fe-block-c57aa9ae05e49fef4e83 { grid-row: 34 / 35 !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-f8378be50c8018e7f63f { grid-row: 35 / 36 !important; }
-#collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 38 / 39 !important; }
+/* --- Footer: use the page's own responsive grid ---------------------------
+   The footer's block placement is authored in each page's inline <style>: a
+   mobile vertical stack (base) and a compact desktop layout under
+   @media (min-width:768px) — e.g. Location at grid-area 3/16/7/20, beside the
+   logo. Earlier !important grid-row overrides here clobbered that desktop
+   media query, forcing the tall mobile stack at all widths (the "spread out"
+   footer). They are removed so the authored responsive layout renders, matching
+   the live site. The map shows on every page (shared footer), as on live. */
 .fe-block-yui_3_17_2_1_1759752886027_17517 .fluid-image-component-root,
 .fe-block-yui_3_17_2_1_1759752886027_17517 .fluid-image-container,
 .fe-block-yui_3_17_2_1_1759752886027_17517 .sqs-image-content,
@@ -225,8 +176,12 @@ section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
     border-top: 1px solid rgba(255, 255, 255, 0.14);
   }
   .fe-block-523cda3f8fca79c5cf2b {
+    /* The pill's authored grid-area (42/11/44/17) shares row 42 with the heading
+       (41/12/43/16), so it rendered on top of the heading text. Drop it to the
+       row directly below the heading so the two pair cleanly with a small gap. */
+    grid-row: 43 / 45 !important;
     align-self: start !important;
-    margin-top: -6px !important;   /* pull the pill up snug under the heading */
+    margin-top: 10px !important;
   }
 }
 
@@ -455,6 +410,81 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
 #collection-6989e8944757e761bbd63fb9 .page-section:nth-of-type(2) h4.lala-included span,
 .lala-included span { color: #f9fce0 !important; }
 
+/* --- Salads / Desserts / Pizzas: remove the tall empty band before the menu (DESKTOP)
+   Each of these pages ships a full-height hero whose fluid-engine reserves ~40+ grid
+   rows that STRETCH to fill the section (align-content), so the title floats above a
+   ~500px void and the price/first item is pushed ~950px down — a large black gap
+   between the title and the menu (the Lasagna page, structured differently, reads fine
+   at ~314px). Replace the stretched grid with a tight flex COLUMN on both the hero and
+   the menu section so blocks stack at their natural height directly under one another.
+   The menu items keep their existing rhythm from the per-item h4 margins (56px), so
+   only the dead space is removed. The pizza menu-book videos are capped to their real
+   width so they don't blow out. Mobile keeps its own flex layout (further below). */
+@media (min-width: 768px) {
+  section[data-section-id="6989e88999610e607a1d4f1d"] .fluid-engine,   /* salads hero   */
+  section[data-section-id="6989e88999610e607a1d4f20"] .fluid-engine,   /* salads menu   */
+  section[data-section-id="6989e8944757e761bbd63fbc"] .fluid-engine,   /* desserts hero */
+  section[data-section-id="6989e8944757e761bbd63fbf"] .fluid-engine,   /* desserts menu */
+  section[data-section-id="6989e8705903f012477e72a7"] .fluid-engine,   /* pizzas hero   */
+  section[data-section-id="6989e8705903f012477e72aa"] .fluid-engine {  /* pizzas menu   */
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+    grid-template-rows: none !important;
+    grid-template-columns: none !important;
+  }
+  section[data-section-id="6989e88999610e607a1d4f1d"] .fluid-engine > .fe-block,
+  section[data-section-id="6989e88999610e607a1d4f20"] .fluid-engine > .fe-block,
+  section[data-section-id="6989e8944757e761bbd63fbc"] .fluid-engine > .fe-block,
+  section[data-section-id="6989e8944757e761bbd63fbf"] .fluid-engine > .fe-block,
+  section[data-section-id="6989e8705903f012477e72a7"] .fluid-engine > .fe-block,
+  section[data-section-id="6989e8705903f012477e72aa"] .fluid-engine > .fe-block {
+    grid-area: auto !important;
+    grid-row: auto !important;
+    grid-column: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+  }
+  /* Menu sections only: the items used to be spaced by empty grid rows between blocks;
+     the flex column removed those, so give the menu a gap that keeps items apart at the
+     same ~rhythm (the hero stays gap:0 — it is just the title). */
+  section[data-section-id="6989e88999610e607a1d4f20"] .fluid-engine,   /* salads menu   */
+  section[data-section-id="6989e8944757e761bbd63fbf"] .fluid-engine,   /* desserts menu */
+  section[data-section-id="6989e8705903f012477e72aa"] .fluid-engine {  /* pizzas menu   */
+    gap: 44px !important;
+  }
+  /* Pizzas menu-book videos: intrinsic-ratio video blocks (~968x581). Cap them to
+     their real width so the flex column doesn't stretch them full-bleed; the intrinsic
+     wrapper keeps their aspect/height. */
+  section[data-section-id="6989e8705903f012477e72aa"] .fluid-engine > .fe-block-yui_3_17_2_1_1774362642002_340643,
+  section[data-section-id="6989e8705903f012477e72aa"] .fluid-engine > .fe-block-yui_3_17_2_1_1774362642002_299904 {
+    max-width: 968px !important;
+    margin: 10px auto !important;
+  }
+  /* Hero: keep the title where it sits under the nav, just drop the empty tail below. */
+  section.page-section[data-section-id="6989e88999610e607a1d4f1d"],
+  section.page-section[data-section-id="6989e8944757e761bbd63fbc"],
+  section.page-section[data-section-id="6989e8705903f012477e72a7"],
+  section.page-section[data-section-id="6989e88999610e607a1d4f1d"] > .content-wrapper,
+  section.page-section[data-section-id="6989e8944757e761bbd63fbc"] > .content-wrapper,
+  section.page-section[data-section-id="6989e8705903f012477e72a7"] > .content-wrapper {
+    padding-bottom: 36px !important;
+  }
+  /* Menu: pull it up flush under the hero with a small, even top gap. */
+  section.page-section[data-section-id="6989e88999610e607a1d4f20"],
+  section.page-section[data-section-id="6989e8944757e761bbd63fbf"],
+  section.page-section[data-section-id="6989e8705903f012477e72aa"],
+  section.page-section[data-section-id="6989e88999610e607a1d4f20"] > .content-wrapper,
+  section.page-section[data-section-id="6989e8944757e761bbd63fbf"] > .content-wrapper,
+  section.page-section[data-section-id="6989e8705903f012477e72aa"] > .content-wrapper {
+    padding-top: 28px !important;
+  }
+}
+
 /* --- Drinks: widen the drink photos to the same 16px border as other pages ------
    They shipped narrow (~312px, ~39px inset). Push them out to 16px each side so
    they read as full-width pictures like the lasagna/lunch photos. The poster gets
@@ -542,6 +572,19 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
   object-fit: cover !important;
 }
 
+/* Stop the three top review cards from overlapping. They were authored at OVERLAPPING
+   grid columns — Sonja 3/11, Jussi 10/18, Eren 17/25 — each sharing a column line with
+   the next. Because the middle card (Jussi) has the LOWEST z-index, its neighbours
+   painted over its left and right edges, hiding the avatar and clipping the first word
+   of the review ("Oikei…" and "Çevir…"). It read as a cropped image but was really a
+   layer overlap. Trim each card's right edge back by one column so the three sit side by
+   side and none covers another. Desktop grid only (mobile stacks the reviews). */
+@media (min-width: 768px) {
+  .fe-block-0bc122c3a61df03a6dac { grid-column: 3 / 10 !important; }   /* Sonja  (left)  */
+  .fe-block-bba38cb5ca528d8020b5 { grid-column: 10 / 17 !important; }  /* Jussi  (middle)*/
+  .fe-block-96788e2ec1575ba416f2 { grid-column: 17 / 24 !important; }  /* Eren   (right) */
+}
+
 /* --- Mobile menu: drop the "Home" item (the logo is the home button) --------
    Hide the homepage entry in the mobile overlay menu so it isn't redundant with
    the logo, which already links home. Scoped to the mobile menu nav item class
@@ -570,6 +613,15 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
    only reorder it — no duplicate button, no restyle. */
 .header-menu-nav { display: flex !important; flex-direction: column !important; }
 .header-menu-cta { order: -1 !important; margin: 0 0 16px 0 !important; }
+/* The open menu overlay starts at the very top of the screen, so the CTA (now the
+   first item) rendered UNDER the fixed logo/hamburger header and overlapped the logo.
+   Pad the menu content down past the header (~161px tall) so "Book now" sits cleanly
+   below the logo. box-sizing keeps the overlay full-height; the nav's space-between
+   distribution just re-centers within the remaining area. */
+.header-menu-nav {
+  padding-top: 150px !important;
+  box-sizing: border-box !important;
+}
 
 @media (max-width: 767px) {
 
@@ -816,7 +868,7 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
      with a tight flex column on mobile so the order reads title -> price -> text
      -> arrow with even, compact spacing. Ordered explicitly so it never depends on
      the authored grid rows. */
-  #collection-6989f0bc5e0b8e771afd533a section.page-section:first-of-type .fluid-engine {
+  section[data-section-id="6989f0bc5e0b8e771afd533d"] .fluid-engine {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -824,7 +876,7 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     grid-template-rows: none !important;
     grid-template-columns: none !important;
   }
-  #collection-6989f0bc5e0b8e771afd533a section.page-section:first-of-type .fluid-engine > .fe-block {
+  section[data-section-id="6989f0bc5e0b8e771afd533d"] .fluid-engine > .fe-block {
     grid-area: auto !important;
     grid-row: auto !important;
     grid-column: auto !important;
@@ -903,8 +955,8 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
      Lasagna layout — ONE title, the price/description, then the menu — all tight
      at the top. We (a) drop the dead arrow and collapse the hero's empty height,
      and (b) pull the menu section up flush under the title. Scoped per page id. */
-  #collection-6989e88999610e607a1d4f1a .page-section:first-of-type .fluid-engine,
-  #collection-6989e8944757e761bbd63fb9 .page-section:first-of-type .fluid-engine {
+  section[data-section-id="6989e88999610e607a1d4f1d"] .fluid-engine,
+  section[data-section-id="6989e8944757e761bbd63fbc"] .fluid-engine {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -913,8 +965,8 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     grid-template-rows: none !important;
     grid-template-columns: none !important;
   }
-  #collection-6989e88999610e607a1d4f1a .page-section:first-of-type .fluid-engine > .fe-block,
-  #collection-6989e8944757e761bbd63fb9 .page-section:first-of-type .fluid-engine > .fe-block {
+  section[data-section-id="6989e88999610e607a1d4f1d"] .fluid-engine > .fe-block,
+  section[data-section-id="6989e8944757e761bbd63fbc"] .fluid-engine > .fe-block {
     grid-area: auto !important;
     grid-row: auto !important;
     grid-column: auto !important;
@@ -1252,5 +1304,114 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
   section.page-section:first-of-type .content-wrapper,
   section.page-section:first-of-type .fluid-engine {
     padding-top: 92px !important;
+  }
+}
+
+/* ============================================================
+   Squarespace runtime removed — self-contained static reveal
+   The Squarespace JS bundles used to add reveal/animation-loaded
+   classes at runtime. With those bundles gone, force every
+   JS-gated element to its final visible state so nothing stays
+   hidden at opacity:0.
+   ============================================================ */
+[data-animation-role] { opacity: 1 !important; }
+.block-animation,
+.block-animation-fade-in,
+.block-animation-slide-up,
+.block-animation-reveal,
+.block-animation-focus-in { opacity: 1 !important; transform: none !important; }
+.lazy-load { opacity: 1 !important; transform: none !important; }
+.sqs-gallery-block-grid img { opacity: 1 !important; }
+.sqs-video-background .background-video,
+.sqs-video-background .custom-fallback-image { opacity: 1 !important; }
+
+/* Fluid images (content-fit): the removed Squarespace JS gave the inner
+   `.content-fit` element its height and set object-fit so the whole image
+   showed. Without it the element collapses to 0 (tall menu spreads vanish),
+   and the base object-fit:cover zooms/crops wide images (the Google-review
+   card screenshots). Fill the existing grid cell (height:100%) and use
+   object-fit:contain so the whole image is always shown, letterboxed if the
+   cell's shape differs — no layout shift, no crop.
+   No `!important`: section-scoped overrides above (e.g. the "Our suppliers"
+   logos, set to static layout) are more specific and keep winning. */
+.fluid-image-container .js-content-mode-element.content-fit {
+  height: 100%;
+}
+.fluid-image-container .content-fit img {
+  object-fit: contain;
+}
+
+/* Masonry gallery: Squarespace JS used to absolutely-position each tile into
+   a balanced masonry. Reproduce it with a CSS grid whose row-spans are set
+   per tile by js/lala-lang.js (from each tile's rendered height), so the two
+   columns stay balanced exactly like the original. */
+.gallery-masonry-item-wrapper { opacity: 1 !important; animation: none !important; }
+.gallery-masonry-wrapper {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: 6px;
+  column-gap: 10px;
+  row-gap: 10px;   /* MUST match GAP in the js/lala-lang.js span math, or tiles
+                      get too few rows and overflow onto the tile below. */
+  position: static !important;
+  height: auto !important;
+}
+.gallery-masonry .gallery-masonry-item,
+.gallery-masonry-wrapper .gallery-masonry-item {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transition: none !important;
+}
+/* Live keeps the masonry gallery at TWO columns on mobile (small thumbnails),
+   not one full-width column. Match that — the JS balancer sizes each tile's row
+   span from its rendered height, so 2 narrow columns pack tightly like live. */
+
+/* --- Footer map on MOBILE: shown on HOME only (match live) ------------------
+   Desktop shows the Google map on every page (authored desktop grid-areas already
+   match live). On MOBILE live shows the map on the HOME page only and HIDES it on
+   every other page, shifting the text blocks up by 10 rows (the map's span) so
+   Location sits right under the logo — no ~260px empty band.
+   Default mobile rule below = the NON-home layout (map hidden, blocks shifted up,
+   grid capped to 28 rows). The HOME override that follows restores the authored
+   map-shown layout (map visible, blocks at their original rows, full 38-row grid).
+   Scoped to <=767px; desktop untouched. */
+@media (max-width: 767px) {
+  .fe-block-yui_3_17_2_1_1742654682241_11007 { display: none !important; }   /* map */
+  .fe-block-d639f4a15da30299b663 { grid-row: 5 / 9 !important; }    /* Location (was 15/19) */
+  .fe-block-d2d45668cd6794c15be3 { grid-row: 10 / 14 !important; }  /* Contact & Book (was 20/24) */
+  .fe-block-7080e82f7dc7d52c18f8 { grid-row: 15 / 22 !important; }  /* Opening hours (was 25/32) */
+  .fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 22 / 24 !important; }  /* Service in languages */
+  .fe-block-yui_3_17_2_1_1743163195830_45464,
+  .fe-block-44beaf53ea176f18f3cc,
+  .fe-block-38d78d35fb058f4c4d9a,
+  .fe-block-e881b38985fed0837b6d,
+  .fe-block-c57aa9ae05e49fef4e83 { grid-row: 24 / 25 !important; }  /* flag row */
+  .fe-block-f8378be50c8018e7f63f { grid-row: 25 / 26 !important; }  /* & Sign language */
+  .fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 28 / 29 !important; }  /* © */
+  section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
+    grid-template-rows: repeat(28, minmax(24px, auto)) !important;  /* was 38; drop trailing empties */
+  }
+
+  /* HOME (index) keeps the mobile footer map, like live. The #collection prefix
+     outranks the non-home rules above, restoring map + original block rows. */
+  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742654682241_11007 { display: block !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-d639f4a15da30299b663 { grid-row: 15 / 19 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-d2d45668cd6794c15be3 { grid-row: 20 / 24 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-7080e82f7dc7d52c18f8 { grid-row: 25 / 32 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 32 / 34 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45464,
+  #collection-6989e82883d7eb240f7d7043 .fe-block-44beaf53ea176f18f3cc,
+  #collection-6989e82883d7eb240f7d7043 .fe-block-38d78d35fb058f4c4d9a,
+  #collection-6989e82883d7eb240f7d7043 .fe-block-e881b38985fed0837b6d,
+  #collection-6989e82883d7eb240f7d7043 .fe-block-c57aa9ae05e49fef4e83 { grid-row: 34 / 35 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-f8378be50c8018e7f63f { grid-row: 35 / 36 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 38 / 39 !important; }
+  #collection-6989e82883d7eb240f7d7043 section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
+    grid-template-rows: repeat(38, minmax(24px, auto)) !important;
   }
 }
