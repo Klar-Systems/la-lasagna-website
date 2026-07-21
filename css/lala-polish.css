@@ -528,6 +528,23 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
   section.page-section[data-section-id="6989e8705903f012477e72aa"] > .content-wrapper {
     padding-top: 28px !important;
   }
+  /* Pizzas hero title uses Squarespace "scaled text": the lala-scaledtext script sizes
+     the heading to FILL its container width. The flex-collapse above set the title block
+     to width:100%, so the fitter blew the heading up to ~312px (it overflowed the whole
+     screen). Constrain the scaled-text container to a live-like width so the fitter sizes
+     the title to a normal ~170px, centered — matching the live site (~172px @1920). */
+  section[data-section-id="6989e8705903f012477e72a7"] .sqsrte-scaled-text-container {
+    max-width: min(55vw, 1100px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  /* Pizzas hero has several stacked blocks (title → "Pizzas are finally here!" →
+     tagline → arrow). At gap:0 the big title's descenders overlapped the line below it,
+     so give this hero a real gap (salads/desserts heroes are a single title and are
+     unaffected). */
+  section[data-section-id="6989e8705903f012477e72a7"] .fluid-engine {
+    gap: 22px !important;
+  }
 }
 
 /* --- Drinks: widen the drink photos to the same 16px border as other pages ------
