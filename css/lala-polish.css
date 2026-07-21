@@ -21,36 +21,80 @@ body {
   margin-right: auto !important;
 }
 
-/* --- Footer: use the page's own responsive grid ---------------------------
-   The footer's block placement is authored in each page's inline <style>: a
-   mobile vertical stack (base) and a compact desktop layout under
-   @media (min-width:768px) — e.g. Location at grid-area 3/16/7/20, beside the
-   logo. Earlier !important grid-row overrides here clobbered that desktop
-   media query, forcing the tall mobile stack at all widths (the "spread out"
-   footer). They are removed so the authored responsive layout renders, matching
-   the live site. The map shows on every page (shared footer), as on live. */
-.fe-block-yui_3_17_2_1_1759752886027_17517 .fluid-image-component-root,
-.fe-block-yui_3_17_2_1_1759752886027_17517 .fluid-image-container,
-.fe-block-yui_3_17_2_1_1759752886027_17517 .sqs-image-content,
-.fe-block-yui_3_17_2_1_1759752886027_17517 .js-content-mode-element-wrapper,
-.fe-block-yui_3_17_2_1_1759752886027_17517 .js-content-mode-element {
-  position: static !important;
-  inset: auto !important;
-  width: 100% !important;
-  height: auto !important;
-  padding: 0 !important;
-  transform: none !important;
-}
-.fe-block-yui_3_17_2_1_1759752886027_17517 img {
-  position: static !important;
-  inset: auto !important;
-  display: block !important;
-  width: 60% !important;
-  max-width: 240px !important;
-  height: auto !important;
-  margin: 0 auto !important;
-  object-fit: contain !important;
-  transform: none !important;
+/* --- Footer map visibility ------------------------------------------------
+   The footer (with its Google map) is shared across every page.
+   • DESKTOP (>=768px): keep the ORIGINAL Squarespace footer exactly as authored —
+     the map shows on every page, columns laid out normally. We touch nothing here.
+   • MOBILE (<=767px): show the map on the HOME page only; on other pages hide it
+     and tidy the fixed-row grid so there's no void (see the mobile block below).
+   All the grid-row shuffling that follows is scoped to mobile so it never disturbs
+   the desktop footer layout. */
+@media (max-width: 767px) {
+  .fe-block-yui_3_17_2_1_1742654682241_11007 { display: none !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742654682241_11007 {
+    display: block !important;
+  }
+  /* footer logo: its fluid-image wrapper collapsed to ~1px (a thin white "line");
+     give it a real height so the logo shows */
+  .fe-block-yui_3_17_2_1_1759752886027_17517 {
+    grid-row: 1 / 5 !important;
+    align-self: center !important;
+  }
+  .fe-block-yui_3_17_2_1_1759752886027_17517 .fluid-image-component-root,
+  .fe-block-yui_3_17_2_1_1759752886027_17517 .fluid-image-container,
+  .fe-block-yui_3_17_2_1_1759752886027_17517 .sqs-image-content,
+  .fe-block-yui_3_17_2_1_1759752886027_17517 .js-content-mode-element-wrapper,
+  .fe-block-yui_3_17_2_1_1759752886027_17517 .js-content-mode-element {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+  .fe-block-yui_3_17_2_1_1759752886027_17517 img {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    width: 60% !important;
+    max-width: 240px !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
+    transform: none !important;
+  }
+  /* Non-home mobile footer: the hidden map left ~250px of empty rows, so shift the
+     content blocks up to sit under the logo. Home keeps the authored rows (map). */
+  .fe-block-d639f4a15da30299b663 { grid-row: 5 / 9 !important; }    /* Location */
+  .fe-block-d2d45668cd6794c15be3 { grid-row: 10 / 14 !important; }  /* Contact & Book */
+  .fe-block-7080e82f7dc7d52c18f8 { grid-row: 15 / 22 !important; }  /* Opening hours */
+  .fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 22 / 24 !important; }  /* Service in languages */
+  .fe-block-yui_3_17_2_1_1743163195830_45464 { grid-row: 24 / 25 !important; }  /* flag */
+  .fe-block-44beaf53ea176f18f3cc { grid-row: 24 / 25 !important; }  /* flag */
+  .fe-block-38d78d35fb058f4c4d9a { grid-row: 24 / 25 !important; }  /* flag */
+  .fe-block-e881b38985fed0837b6d { grid-row: 24 / 25 !important; }  /* flag */
+  .fe-block-c57aa9ae05e49fef4e83 { grid-row: 24 / 25 !important; }  /* flag */
+  .fe-block-f8378be50c8018e7f63f { grid-row: 25 / 26 !important; }  /* & Sign language */
+  .fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 28 / 29 !important; }  /* © */
+  /* cap the grid so the empty trailing rows below © collapse */
+  section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
+    grid-template-rows: repeat(28, 24px) !important;
+  }
+  /* Home page (mobile): map shows — keep the authored rows + full grid height. */
+  #collection-6989e82883d7eb240f7d7043 section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
+    grid-template-rows: repeat(38, 24px) !important;
+  }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-d639f4a15da30299b663 { grid-row: 15 / 19 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-d2d45668cd6794c15be3 { grid-row: 20 / 24 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-7080e82f7dc7d52c18f8 { grid-row: 25 / 32 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 32 / 34 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45464,
+  #collection-6989e82883d7eb240f7d7043 .fe-block-44beaf53ea176f18f3cc,
+  #collection-6989e82883d7eb240f7d7043 .fe-block-38d78d35fb058f4c4d9a,
+  #collection-6989e82883d7eb240f7d7043 .fe-block-e881b38985fed0837b6d,
+  #collection-6989e82883d7eb240f7d7043 .fe-block-c57aa9ae05e49fef4e83 { grid-row: 34 / 35 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-f8378be50c8018e7f63f { grid-row: 35 / 36 !important; }
+  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 38 / 39 !important; }
 }
 
 /* --- Footer map: clickable + "View on Google Maps" caption ----------------
@@ -165,23 +209,24 @@ body {
 .lala-tel:hover span,
 .lala-tel:hover strong { background: #ffffff; color: #1c1a17 !important; }
 .lala-tel:hover { background: #ffffff; }
-/* Desktop only: pull the heading and pill together as a tidy pair. The two blocks
-   sit in adjacent grid rows; align the heading to the bottom of its cell and the
-   pill to the top of its (immediately following) cell, with only a small gap, so
-   the number sits right under "…book by calling us" instead of floating below. */
+/* Desktop only: put the "You can also book by calling us" heading + phone number
+   ABOVE the photo (authored order was photo -> text -> number). Reassign their grid
+   rows so text+number sit just above the picture, and push the picture down below
+   them. Columns are kept from the authored layout. */
 @media (min-width: 768px) {
-  .fe-block-916612e5e07cbc8f0eba {
+  .fe-block-916612e5e07cbc8f0eba {           /* heading — above the picture */
+    grid-row: 30 / 32 !important;
     align-self: end !important;
     padding-top: 28px !important;
     border-top: 1px solid rgba(255, 255, 255, 0.14);
   }
-  .fe-block-523cda3f8fca79c5cf2b {
-    /* The pill's authored grid-area (42/11/44/17) shares row 42 with the heading
-       (41/12/43/16), so it rendered on top of the heading text. Drop it to the
-       row directly below the heading so the two pair cleanly with a small gap. */
-    grid-row: 43 / 45 !important;
+  .fe-block-523cda3f8fca79c5cf2b {           /* phone pill — right under the heading */
+    grid-row: 32 / 34 !important;
     align-self: start !important;
-    margin-top: 10px !important;
+    margin-top: 16px !important;   /* a little more space below the heading */
+  }
+  .fe-block-yui_3_17_2_1_1764702229989_13421 {  /* picture — now below text+number */
+    grid-row: 35 / 45 !important;
   }
 }
 
@@ -868,7 +913,7 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
      with a tight flex column on mobile so the order reads title -> price -> text
      -> arrow with even, compact spacing. Ordered explicitly so it never depends on
      the authored grid rows. */
-  section[data-section-id="6989f0bc5e0b8e771afd533d"] .fluid-engine {
+  #collection-6989f0bc5e0b8e771afd533a #sections section.page-section:first-of-type .fluid-engine {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -876,7 +921,7 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     grid-template-rows: none !important;
     grid-template-columns: none !important;
   }
-  section[data-section-id="6989f0bc5e0b8e771afd533d"] .fluid-engine > .fe-block {
+  #collection-6989f0bc5e0b8e771afd533a #sections section.page-section:first-of-type .fluid-engine > .fe-block {
     grid-area: auto !important;
     grid-row: auto !important;
     grid-column: auto !important;
@@ -955,8 +1000,8 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
      Lasagna layout — ONE title, the price/description, then the menu — all tight
      at the top. We (a) drop the dead arrow and collapse the hero's empty height,
      and (b) pull the menu section up flush under the title. Scoped per page id. */
-  section[data-section-id="6989e88999610e607a1d4f1d"] .fluid-engine,
-  section[data-section-id="6989e8944757e761bbd63fbc"] .fluid-engine {
+  #collection-6989e88999610e607a1d4f1a #sections .page-section:first-of-type .fluid-engine,
+  #collection-6989e8944757e761bbd63fb9 #sections .page-section:first-of-type .fluid-engine {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -965,8 +1010,8 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     grid-template-rows: none !important;
     grid-template-columns: none !important;
   }
-  section[data-section-id="6989e88999610e607a1d4f1d"] .fluid-engine > .fe-block,
-  section[data-section-id="6989e8944757e761bbd63fbc"] .fluid-engine > .fe-block {
+  #collection-6989e88999610e607a1d4f1a #sections .page-section:first-of-type .fluid-engine > .fe-block,
+  #collection-6989e8944757e761bbd63fb9 #sections .page-section:first-of-type .fluid-engine > .fe-block {
     grid-area: auto !important;
     grid-row: auto !important;
     grid-column: auto !important;
@@ -1371,47 +1416,3 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
    not one full-width column. Match that — the JS balancer sizes each tile's row
    span from its rendered height, so 2 narrow columns pack tightly like live. */
 
-/* --- Footer map on MOBILE: shown on HOME only (match live) ------------------
-   Desktop shows the Google map on every page (authored desktop grid-areas already
-   match live). On MOBILE live shows the map on the HOME page only and HIDES it on
-   every other page, shifting the text blocks up by 10 rows (the map's span) so
-   Location sits right under the logo — no ~260px empty band.
-   Default mobile rule below = the NON-home layout (map hidden, blocks shifted up,
-   grid capped to 28 rows). The HOME override that follows restores the authored
-   map-shown layout (map visible, blocks at their original rows, full 38-row grid).
-   Scoped to <=767px; desktop untouched. */
-@media (max-width: 767px) {
-  .fe-block-yui_3_17_2_1_1742654682241_11007 { display: none !important; }   /* map */
-  .fe-block-d639f4a15da30299b663 { grid-row: 5 / 9 !important; }    /* Location (was 15/19) */
-  .fe-block-d2d45668cd6794c15be3 { grid-row: 10 / 14 !important; }  /* Contact & Book (was 20/24) */
-  .fe-block-7080e82f7dc7d52c18f8 { grid-row: 15 / 22 !important; }  /* Opening hours (was 25/32) */
-  .fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 22 / 24 !important; }  /* Service in languages */
-  .fe-block-yui_3_17_2_1_1743163195830_45464,
-  .fe-block-44beaf53ea176f18f3cc,
-  .fe-block-38d78d35fb058f4c4d9a,
-  .fe-block-e881b38985fed0837b6d,
-  .fe-block-c57aa9ae05e49fef4e83 { grid-row: 24 / 25 !important; }  /* flag row */
-  .fe-block-f8378be50c8018e7f63f { grid-row: 25 / 26 !important; }  /* & Sign language */
-  .fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 28 / 29 !important; }  /* © */
-  section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
-    grid-template-rows: repeat(28, minmax(24px, auto)) !important;  /* was 38; drop trailing empties */
-  }
-
-  /* HOME (index) keeps the mobile footer map, like live. The #collection prefix
-     outranks the non-home rules above, restoring map + original block rows. */
-  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742654682241_11007 { display: block !important; }
-  #collection-6989e82883d7eb240f7d7043 .fe-block-d639f4a15da30299b663 { grid-row: 15 / 19 !important; }
-  #collection-6989e82883d7eb240f7d7043 .fe-block-d2d45668cd6794c15be3 { grid-row: 20 / 24 !important; }
-  #collection-6989e82883d7eb240f7d7043 .fe-block-7080e82f7dc7d52c18f8 { grid-row: 25 / 32 !important; }
-  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45046 { grid-row: 32 / 34 !important; }
-  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1743163195830_45464,
-  #collection-6989e82883d7eb240f7d7043 .fe-block-44beaf53ea176f18f3cc,
-  #collection-6989e82883d7eb240f7d7043 .fe-block-38d78d35fb058f4c4d9a,
-  #collection-6989e82883d7eb240f7d7043 .fe-block-e881b38985fed0837b6d,
-  #collection-6989e82883d7eb240f7d7043 .fe-block-c57aa9ae05e49fef4e83 { grid-row: 34 / 35 !important; }
-  #collection-6989e82883d7eb240f7d7043 .fe-block-f8378be50c8018e7f63f { grid-row: 35 / 36 !important; }
-  #collection-6989e82883d7eb240f7d7043 .fe-block-yui_3_17_2_1_1742749145870_2220 { grid-row: 38 / 39 !important; }
-  #collection-6989e82883d7eb240f7d7043 section[data-section-id="67dc02dfc6808548e4c5e749"] .fluid-engine {
-    grid-template-rows: repeat(38, minmax(24px, auto)) !important;
-  }
-}

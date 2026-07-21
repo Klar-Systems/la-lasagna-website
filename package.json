@@ -5,6 +5,6 @@
   "description": "La Lasagna Helsinki — static site + reservation mail function",
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
-    "nodemailer": "^6.9.16"
+    "resend": "^4.8.0"
   }
 }
