@@ -172,6 +172,24 @@ body {
   display: block !important;
 }
 
+/* --- Lunch: close the void below the videos (same fix as Who We Are) --------
+   The lunch video blocks span more grid rows than the forced 16:9 <video> box
+   fills, leaving a tall black band (the "too long" empty space). Drop the 16:9
+   lock and let the video fill the whole height of its own cell with object-fit:
+   cover — how the original background videos rendered. Scoped to the Lunch page
+   (collection 67e563e0...) so no other page moves. */
+#collection-67e563e06724a4311142e55a .lala-video-cell .sqs-native-video,
+#collection-67e563e06724a4311142e55a .lala-video-cell .native-video-player {
+  height: 100% !important;
+  aspect-ratio: auto !important;
+}
+#collection-67e563e06724a4311142e55a .lala-video-cell video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
 /* --- Contact / Book a table: tidy "call to book" block --------------------
    The "You can also book by calling us" heading and the phone number sat low in
    the section floating in a large empty band, far from the booking form and
