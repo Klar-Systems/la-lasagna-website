@@ -58,6 +58,237 @@
   var PARTY_MAX_DEFAULT = 12;
   var BOOKING_HORIZON_DAYS = 90; /* the API's ceiling */
 
+  var COUNTRIES = [
+    ["FI","+358","Finland"],
+    ["AF","+93","Afghanistan"],
+    ["AL","+355","Albania"],
+    ["DZ","+213","Algeria"],
+    ["AD","+376","Andorra"],
+    ["AO","+244","Angola"],
+    ["AG","+1268","Antigua and Barbuda"],
+    ["AR","+54","Argentina"],
+    ["AM","+374","Armenia"],
+    ["AU","+61","Australia"],
+    ["AT","+43","Austria"],
+    ["AZ","+994","Azerbaijan"],
+    ["BS","+1242","Bahamas"],
+    ["BH","+973","Bahrain"],
+    ["BD","+880","Bangladesh"],
+    ["BB","+1246","Barbados"],
+    ["BY","+375","Belarus"],
+    ["BE","+32","Belgium"],
+    ["BZ","+501","Belize"],
+    ["BJ","+229","Benin"],
+    ["BT","+975","Bhutan"],
+    ["BO","+591","Bolivia"],
+    ["BA","+387","Bosnia and Herzegovina"],
+    ["BW","+267","Botswana"],
+    ["BR","+55","Brazil"],
+    ["BN","+673","Brunei"],
+    ["BG","+359","Bulgaria"],
+    ["BF","+226","Burkina Faso"],
+    ["BI","+257","Burundi"],
+    ["KH","+855","Cambodia"],
+    ["CM","+237","Cameroon"],
+    ["CA","+1","Canada"],
+    ["CV","+238","Cape Verde"],
+    ["CF","+236","Central African Republic"],
+    ["TD","+235","Chad"],
+    ["CL","+56","Chile"],
+    ["CN","+86","China"],
+    ["CO","+57","Colombia"],
+    ["KM","+269","Comoros"],
+    ["CG","+242","Congo"],
+    ["CD","+243","Congo (DRC)"],
+    ["CR","+506","Costa Rica"],
+    ["CI","+225","Côte d'Ivoire"],
+    ["HR","+385","Croatia"],
+    ["CU","+53","Cuba"],
+    ["CY","+357","Cyprus"],
+    ["CZ","+420","Czechia"],
+    ["DK","+45","Denmark"],
+    ["DJ","+253","Djibouti"],
+    ["DM","+1767","Dominica"],
+    ["DO","+1809","Dominican Republic"],
+    ["EC","+593","Ecuador"],
+    ["EG","+20","Egypt"],
+    ["SV","+503","El Salvador"],
+    ["GQ","+240","Equatorial Guinea"],
+    ["ER","+291","Eritrea"],
+    ["EE","+372","Estonia"],
+    ["SZ","+268","Eswatini"],
+    ["ET","+251","Ethiopia"],
+    ["FJ","+679","Fiji"],
+    ["FR","+33","France"],
+    ["GA","+241","Gabon"],
+    ["GM","+220","Gambia"],
+    ["GE","+995","Georgia"],
+    ["DE","+49","Germany"],
+    ["GH","+233","Ghana"],
+    ["GR","+30","Greece"],
+    ["GD","+1473","Grenada"],
+    ["GT","+502","Guatemala"],
+    ["GN","+224","Guinea"],
+    ["GW","+245","Guinea-Bissau"],
+    ["GY","+592","Guyana"],
+    ["HT","+509","Haiti"],
+    ["HN","+504","Honduras"],
+    ["HK","+852","Hong Kong"],
+    ["HU","+36","Hungary"],
+    ["IS","+354","Iceland"],
+    ["IN","+91","India"],
+    ["ID","+62","Indonesia"],
+    ["IR","+98","Iran"],
+    ["IQ","+964","Iraq"],
+    ["IE","+353","Ireland"],
+    ["IL","+972","Israel"],
+    ["IT","+39","Italy"],
+    ["JM","+1876","Jamaica"],
+    ["JP","+81","Japan"],
+    ["JO","+962","Jordan"],
+    ["KZ","+7","Kazakhstan"],
+    ["KE","+254","Kenya"],
+    ["KI","+686","Kiribati"],
+    ["KW","+965","Kuwait"],
+    ["KG","+996","Kyrgyzstan"],
+    ["LA","+856","Laos"],
+    ["LV","+371","Latvia"],
+    ["LB","+961","Lebanon"],
+    ["LS","+266","Lesotho"],
+    ["LR","+231","Liberia"],
+    ["LY","+218","Libya"],
+    ["LI","+423","Liechtenstein"],
+    ["LT","+370","Lithuania"],
+    ["LU","+352","Luxembourg"],
+    ["MO","+853","Macau"],
+    ["MG","+261","Madagascar"],
+    ["MW","+265","Malawi"],
+    ["MY","+60","Malaysia"],
+    ["MV","+960","Maldives"],
+    ["ML","+223","Mali"],
+    ["MT","+356","Malta"],
+    ["MH","+692","Marshall Islands"],
+    ["MR","+222","Mauritania"],
+    ["MU","+230","Mauritius"],
+    ["MX","+52","Mexico"],
+    ["FM","+691","Micronesia"],
+    ["MD","+373","Moldova"],
+    ["MC","+377","Monaco"],
+    ["MN","+976","Mongolia"],
+    ["ME","+382","Montenegro"],
+    ["MA","+212","Morocco"],
+    ["MZ","+258","Mozambique"],
+    ["MM","+95","Myanmar"],
+    ["NA","+264","Namibia"],
+    ["NR","+674","Nauru"],
+    ["NP","+977","Nepal"],
+    ["NL","+31","Netherlands"],
+    ["NZ","+64","New Zealand"],
+    ["NI","+505","Nicaragua"],
+    ["NE","+227","Niger"],
+    ["NG","+234","Nigeria"],
+    ["KP","+850","North Korea"],
+    ["MK","+389","North Macedonia"],
+    ["NO","+47","Norway"],
+    ["OM","+968","Oman"],
+    ["PK","+92","Pakistan"],
+    ["PW","+680","Palau"],
+    ["PS","+970","Palestine"],
+    ["PA","+507","Panama"],
+    ["PG","+675","Papua New Guinea"],
+    ["PY","+595","Paraguay"],
+    ["PE","+51","Peru"],
+    ["PH","+63","Philippines"],
+    ["PL","+48","Poland"],
+    ["PT","+351","Portugal"],
+    ["PR","+1787","Puerto Rico"],
+    ["QA","+974","Qatar"],
+    ["RO","+40","Romania"],
+    ["RU","+7","Russia"],
+    ["RW","+250","Rwanda"],
+    ["KN","+1869","Saint Kitts and Nevis"],
+    ["LC","+1758","Saint Lucia"],
+    ["VC","+1784","Saint Vincent and the Grenadines"],
+    ["WS","+685","Samoa"],
+    ["SM","+378","San Marino"],
+    ["ST","+239","São Tomé and Príncipe"],
+    ["SA","+966","Saudi Arabia"],
+    ["SN","+221","Senegal"],
+    ["RS","+381","Serbia"],
+    ["SC","+248","Seychelles"],
+    ["SL","+232","Sierra Leone"],
+    ["SG","+65","Singapore"],
+    ["SK","+421","Slovakia"],
+    ["SI","+386","Slovenia"],
+    ["SB","+677","Solomon Islands"],
+    ["SO","+252","Somalia"],
+    ["ZA","+27","South Africa"],
+    ["KR","+82","South Korea"],
+    ["SS","+211","South Sudan"],
+    ["ES","+34","Spain"],
+    ["LK","+94","Sri Lanka"],
+    ["SD","+249","Sudan"],
+    ["SR","+597","Suriname"],
+    ["SE","+46","Sweden"],
+    ["CH","+41","Switzerland"],
+    ["SY","+963","Syria"],
+    ["TW","+886","Taiwan"],
+    ["TJ","+992","Tajikistan"],
+    ["TZ","+255","Tanzania"],
+    ["TH","+66","Thailand"],
+    ["TL","+670","Timor-Leste"],
+    ["TG","+228","Togo"],
+    ["TO","+676","Tonga"],
+    ["TT","+1868","Trinidad and Tobago"],
+    ["TN","+216","Tunisia"],
+    ["TR","+90","Türkiye"],
+    ["TM","+993","Turkmenistan"],
+    ["TV","+688","Tuvalu"],
+    ["UG","+256","Uganda"],
+    ["UA","+380","Ukraine"],
+    ["AE","+971","United Arab Emirates"],
+    ["GB","+44","United Kingdom"],
+    ["US","+1","United States"],
+    ["UY","+598","Uruguay"],
+    ["UZ","+998","Uzbekistan"],
+    ["VU","+678","Vanuatu"],
+    ["VA","+379","Vatican City"],
+    ["VE","+58","Venezuela"],
+    ["VN","+84","Vietnam"],
+    ["YE","+967","Yemen"],
+    ["ZM","+260","Zambia"],
+    ["ZW","+263","Zimbabwe"]
+  ];
+
+  /* Flags are images, not emoji: a Windows browser renders a flag emoji as a
+     "?" box, and an <option> cannot hold an image at all — which is why the
+     picker is this small custom list and not a <select>. flagcdn is a static
+     image host; if it is unreachable the flag is blank and the code still
+     reads. */
+  function flagUrl(iso) {
+    return 'https://flagcdn.com/24x18/' + iso.toLowerCase() + '.png';
+  }
+
+  /* Every country, Finland first so the default is the house one. Built once
+     at load. The API accepts any number either way, so a country this list is
+     missing is never a blocked booking. */
+  var DIAL_OPTIONS = COUNTRIES.map(function (c) {
+    return '<button type="button" role="option" data-dial="' + c[1] + '" data-iso="' + c[0] + '">' +
+      '<img src="' + flagUrl(c[0]) + '" alt="" loading="lazy">' +
+      '<span class="klar-dial-name">' + esc(c[2]) + '</span>' +
+      '<span class="klar-dial-code">' + c[1] + '</span></button>';
+  }).join('');
+
+  /* The picked code plus the typed national number, as one stored value. A
+     full "+…" number typed over the picker wins, and a leading trunk zero is
+     dropped because with an explicit country code it is not part of the
+     number. */
+  function combineDial(dial, local) {
+    var v = (local || '').replace(/[^\d+]/g, '');
+    if (v.charAt(0) === '+') return v;
+    return (dial || '') + v.replace(/^0+/, '');
+  }
+
   /* ---------------------------------------------------------------- copy --- */
 
   var COPY = {
@@ -73,6 +304,7 @@
       name: 'Nimi',
       namePlaceholder: 'Nimi tilausta varten',
       phone: 'Puhelin',
+      countryCode: 'Maakoodi',
       optional: '(vapaaehtoinen)',
       total: 'Yhteensä',
       send: 'Lähetä tilaus',
@@ -173,6 +405,7 @@
       name: 'Name',
       namePlaceholder: 'Name for the order',
       phone: 'Phone',
+      countryCode: 'Country code',
       optional: '(optional)',
       total: 'Total',
       send: 'Send order',
@@ -349,6 +582,28 @@
     '.klar-field input,.klar-field select,.klar-field textarea{width:100%;padding:11px 12px;',
     'border:1px solid var(--klar-line);border-radius:var(--klar-radius);font:inherit;',
     'background:transparent;color:inherit}',
+    /* Country button + number, with the flag list opening over the form. */
+    '.klar-phone{position:relative;display:flex;gap:8px}',
+    '.klar-dial{display:flex;align-items:center;gap:6px;flex:0 0 auto;padding:0 10px;',
+    'min-height:46px;border:1px solid var(--klar-line);border-radius:var(--klar-radius);',
+    'background:transparent;color:inherit;font:inherit;cursor:pointer}',
+    '.klar-dial img{width:20px;height:15px;object-fit:cover;display:block}',
+    '.klar-caret{font-size:.7rem;color:var(--klar-muted)}',
+    '.klar-dial-menu{position:absolute;z-index:30;top:calc(100% + 4px);left:0;width:280px;',
+    'max-width:92vw;border:1px solid var(--klar-line);border-radius:var(--klar-radius);',
+    'background:#fff;color:#111;box-shadow:0 10px 30px rgba(0,0,0,.15)}',
+    '.klar-dial-menu[hidden]{display:none}',
+    '.klar-dial-search{width:100%;box-sizing:border-box;padding:10px 12px;border:0;',
+    'border-bottom:1px solid var(--klar-line);font:inherit;color:inherit;background:transparent;outline:none}',
+    '.klar-dial-list{max-height:240px;overflow:auto}',
+    '.klar-dial-list button{display:flex;align-items:center;gap:8px;width:100%;padding:8px 12px;',
+    'border:0;background:transparent;text-align:left;font:inherit;color:inherit;cursor:pointer}',
+    '.klar-dial-list button:hover{background:rgba(0,0,0,.06)}',
+    '.klar-dial-list button[hidden]{display:none}',
+    '.klar-dial-list img{width:20px;height:15px;object-fit:cover;flex:0 0 auto}',
+    '.klar-dial-name{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+    '.klar-dial-code{color:var(--klar-muted);flex:0 0 auto}',
+    '.klar-phone input[type="tel"]{flex:1 1 auto;min-width:0;width:auto}',
     /* A native <select>, a date input and a text input each compute their own
        height from platform chrome, so identical padding still drew three
        different boxes — the date field beside the party select most visibly.
@@ -577,7 +832,18 @@
           '<input type="text" autocomplete="name" data-klar="bname"></div>' +
           '<div class="klar-pair">' +
           '<div class="klar-field"><label>' + esc(t.phone) + '</label>' +
-          '<input type="tel" autocomplete="tel" data-klar="bphone"></div>' +
+          '<div class="klar-phone">' +
+          '<button type="button" class="klar-dial" data-klar="bphone-dial-btn" ' +
+          'aria-haspopup="listbox" aria-expanded="false">' +
+          '<img data-klar="bphone-dial-flag" src="' + flagUrl('FI') + '" alt="">' +
+          '<span data-klar="bphone-dial-code">+358</span>' +
+          '<span class="klar-caret" aria-hidden="true">\u25be</span></button>' +
+          '<input type="hidden" data-klar="bphone-dial" value="+358">' +
+          '<div class="klar-dial-menu" data-klar="bphone-dial-menu" hidden>' +
+          '<input type="text" class="klar-dial-search" data-klar="bphone-dial-search" ' +
+          'placeholder="' + esc(t.countryCode) + '" autocomplete="off">' +
+          '<div class="klar-dial-list" role="listbox">' + DIAL_OPTIONS + '</div></div>' +
+          '<input type="tel" autocomplete="tel" data-klar="bphone"></div></div>' +
           '<div class="klar-field"><label>' + esc(t.email) + '</label>' +
           '<input type="email" autocomplete="email" data-klar="bemail"></div></div>' +
           /* Both optional boxes live behind one closed <details>. Native, so it
@@ -1060,6 +1326,59 @@
     var slotsEl = el('slots');
     var bookErrEl = el('book-err');
     var bookBtn = el('book-submit');
+
+    /* Country dial picker: opens a searchable list of real flags; choosing one
+       sets the hidden bphone-dial the submit combines with the number. */
+    (function () {
+      var dialBtn = el('bphone-dial-btn');
+      var dialInput = el('bphone-dial');
+      var dialFlag = el('bphone-dial-flag');
+      var dialCode = el('bphone-dial-code');
+      var dialMenu = el('bphone-dial-menu');
+      var dialSearch = el('bphone-dial-search');
+      if (!dialBtn || !dialMenu) return;
+
+      function closeDial() {
+        dialMenu.hidden = true;
+        dialBtn.setAttribute('aria-expanded', 'false');
+      }
+      function filterDial(query) {
+        var q = query.trim().toLowerCase();
+        dialMenu.querySelectorAll('[data-dial]').forEach(function (option) {
+          option.hidden = q.length > 0 && option.textContent.toLowerCase().indexOf(q) === -1;
+        });
+      }
+      function chooseDial(option) {
+        dialInput.value = option.getAttribute('data-dial');
+        dialCode.textContent = option.getAttribute('data-dial');
+        dialFlag.src = flagUrl(option.getAttribute('data-iso'));
+        closeDial();
+      }
+      dialBtn.addEventListener('click', function () {
+        if (!dialMenu.hidden) { closeDial(); return; }
+        dialMenu.hidden = false;
+        dialBtn.setAttribute('aria-expanded', 'true');
+        dialSearch.value = '';
+        filterDial('');
+        dialSearch.focus();
+      });
+      dialSearch.addEventListener('input', function () { filterDial(dialSearch.value); });
+      dialSearch.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') { closeDial(); dialBtn.focus(); return; }
+        if (event.key === 'Enter') {
+          var first = dialMenu.querySelector('[data-dial]:not([hidden])');
+          if (first) chooseDial(first);
+        }
+      });
+      dialMenu.addEventListener('click', function (event) {
+        var option = event.target.closest('[data-dial]');
+        if (option) chooseDial(option);
+      });
+      document.addEventListener('click', function (event) {
+        if (dialMenu.hidden) return;
+        if (!dialMenu.contains(event.target) && !dialBtn.contains(event.target)) closeDial();
+      });
+    })();
     var chosenSlot = '';
     var booking = false;
 
@@ -1307,7 +1626,7 @@
       bookBtn.addEventListener('click', function () {
         if (booking) return;
         var name = el('bname').value.trim();
-        var phone = el('bphone').value.trim();
+        var phone = combineDial(el('bphone-dial').value, el('bphone').value.trim());
         var email = el('bemail').value.trim();
         var requests = el('breq').value.trim();
         var diet = el('bdiet').value.trim();
