@@ -1483,6 +1483,34 @@
       return t.bookFields.replace('{fields}', list);
     }
 
+    /* Every stop this form makes is a row Klar can count. A guest who was
+       refused in the browser — a field left empty, a time the grid dropped,
+       an API that never answered — used to leave nothing anywhere: no request,
+       no row, no bell (La Lasagna, 2026-09-13; AUDIT-2026-09 F-002). So the
+       form now says so, to the same endpoint the hosted widget's funnel uses:
+       `form_blocked` with the NAMES of the fields it refused on, `widget_failed`
+       with why, `booking_failed` with the server's status and code. Never what
+       the guest typed — the server drops anything else anyway.
+
+       Fire-and-forget: keepalive so a beacon sent as the page is left still
+       goes, and every failure swallowed. A booking must never fail, slow down
+       or show an error because a counter did not get through. */
+    var funnelSession = 'klar-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    function track(type, meta) {
+      try {
+        win
+          .fetch(cfg.api + '/api/' + encodeURIComponent(cfg.bookSlug) + '/widget-events', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            keepalive: true,
+            body: JSON.stringify({ session_id: funnelSession, event_type: type, metadata: meta || {} })
+          })
+          .catch(function () {});
+      } catch (error) {
+        /* a counter that cannot be sent is not a fault the guest should see */
+      }
+    }
+
     function showBookErr(message) {
       bookErrEl.textContent = message;
       bookErrEl.hidden = !message;
@@ -1600,6 +1628,8 @@
               ' — no times can be offered.',
             error
           );
+          var failed = /availability (\d+)$/.exec(String(error && error.message));
+          track('widget_failed', { reason: 'availability', status: failed ? Number(failed[1]) : 0 });
           slotsEl.innerHTML =
             '<span class="klar-muted">' +
             esc((/ 404$/.test(error.message) ? t.bookingOff : t.slotsFailed) + callUs()) +
@@ -1718,12 +1748,15 @@
         var requests = el('breq').value.trim();
         var diet = el('bdiet').value.trim();
         var dietConsent = el('bdiet-consent').checked;
+        /* The fifth column is the field's name for the beacon — the same word
+           on every form we serve, so "phone ×3" means the same thing whichever
+           site it came from. */
         var required = [
-          [!dateEl.value, dateEl, t.needDate, t.fieldDate],
-          [!chosenSlot, slotsEl, t.needTime, t.fieldTime],
-          [!name, el('bname'), t.needName, t.fieldName],
-          [!phoneLocal, el('bphone'), t.needPhone, t.fieldPhone],
-          [!email, el('bemail'), t.needEmail, t.fieldEmail]
+          [!dateEl.value, dateEl, t.needDate, t.fieldDate, 'date'],
+          [!chosenSlot, slotsEl, t.needTime, t.fieldTime, 'time'],
+          [!name, el('bname'), t.needName, t.fieldName, 'name'],
+          [!phoneLocal, el('bphone'), t.needPhone, t.fieldPhone, 'phone'],
+          [!email, el('bemail'), t.needEmail, t.fieldEmail, 'email']
         ];
         /* Name only what is actually empty. The old line listed all five
            fields whatever the guest had already filled in, so someone who had
@@ -1731,11 +1764,16 @@
            time and their own name — and went looking for a fault in the four
            fields that were fine. */
         var missing = [];
+        var blocked = [];
         required.forEach(function (row) {
           markField(row[1], row[0] ? row[2] : '');
-          if (row[0]) missing.push(row[3]);
+          if (row[0]) {
+            missing.push(row[3]);
+            blocked.push(row[4]);
+          }
         });
         if (missing.length) {
+          track('form_blocked', { fields: blocked });
           showBookErr(joinFields(missing));
           /* On a phone the error line sits just above the button, which is
              where the thumb already is — and the field it is about can be two
@@ -1750,6 +1788,7 @@
            being turned away in the form costs the guest nothing. */
         if (diet && !dietConsent) {
           showBookErr(t.dietaryConsentMissing);
+          track('form_blocked', { fields: ['diet_consent'] });
           return;
         }
         showBookErr('');
@@ -1805,6 +1844,7 @@
               bookBtn.disabled = false;
               renderDeposit();
               warn('deposit session refused for "' + cfg.bookSlug + '".', result.body);
+              track('booking_failed', { status: result.status, error_code: result.body.code || null, form: 'deposit' });
               showBookErr(result.body.error || t.generic + callUs());
               if (result.body.code === 'SLOT_TAKEN') loadSlots();
               return;
@@ -1821,6 +1861,7 @@
               bookBtn.disabled = false;
               renderDeposit();
               warn('the booking could not be held across the payment.', storageError);
+              track('widget_failed', { reason: 'deposit_hold' });
               showBookErr(t.generic + callUs());
               return;
             }
@@ -1831,6 +1872,7 @@
             bookBtn.disabled = false;
             renderDeposit();
             warn('deposit request failed for "' + cfg.bookSlug + '".', error);
+            track('widget_failed', { reason: 'deposit_network' });
             showBookErr(t.generic + callUs());
           });
       }
@@ -1862,6 +1904,7 @@
             renderDeposit();
             if (!result.ok) {
               warn('booking rejected for "' + cfg.bookSlug + '" (' + result.status + ').', result.body);
+              track('booking_failed', { status: result.status, error_code: result.body.code || null });
               /* The API returns per-field messages — show them, they are more
                * useful than the summary. */
               var fields = result.body.fields;
@@ -1883,6 +1926,7 @@
             bookBtn.disabled = false;
             renderDeposit();
             warn('booking request failed for "' + cfg.bookSlug + '".', error);
+            track('widget_failed', { reason: 'book_network' });
             showBookErr(t.generic + callUs());
           });
       }
@@ -1924,6 +1968,7 @@
              and nothing is charged twice; the venue is the only one who can
              sort it out, so the guest is pointed at them. */
           warn('returned from a deposit payment with no held booking.', sessionId);
+          track('widget_failed', { reason: 'deposit_return_lost' });
           showBookErr(t.depositFailed + callUs());
           return true;
         }
