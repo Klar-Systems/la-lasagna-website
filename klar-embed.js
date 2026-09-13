@@ -370,7 +370,7 @@
       depositFailed:
         'Maksua ei voitu vahvistaa. Jos rahat lähtivät tililtäsi, ne palautetaan.',
       bookOk: 'Pöytä varattu',
-      bookConfirm: 'Vahvistus lähetettiin sähköpostiisi.',
+      bookConfirm: 'Vahvistus lähetettiin osoitteeseen {email}. Jos se ei näy, tarkista roskapostikansio.',
       bookAgain: 'Tee uusi varaus',
       /* `{fields}` is the list of the ones actually left empty, built at the
          click. The old copy named all five every time. */
@@ -381,6 +381,12 @@
       fieldPhone: 'puhelin',
       fieldEmail: 'sähköposti',
       fieldAnd: 'ja',
+      needDate: 'Valitse päivä.',
+      needTime: 'Valitse kellonaika.',
+      needName: 'Kirjoita nimesi.',
+      needPhone: 'Kirjoita puhelinnumerosi.',
+      needEmail: 'Kirjoita sähköpostiosoitteesi.',
+      slotGone: 'Klo {time} ei ole enää vapaana tälle päivälle ja seurueelle. Valitse toinen aika.',
       at: 'klo',
       generic: 'Yhteys ei onnistunut. Yritä hetken päästä uudelleen.',
       callUs: 'Soita',
@@ -456,7 +462,7 @@
       depositFailed:
         'The payment could not be confirmed. If you were charged, the money is refunded.',
       bookOk: 'Table booked',
-      bookConfirm: 'A confirmation was sent to your email.',
+      bookConfirm: 'A confirmation was sent to {email}. If it does not arrive, check your spam folder.',
       bookAgain: 'Make another booking',
       bookFields: 'Still needed: {fields}.',
       fieldDate: 'the date',
@@ -465,6 +471,12 @@
       fieldPhone: 'your phone number',
       fieldEmail: 'your email',
       fieldAnd: 'and',
+      needDate: 'Choose a date.',
+      needTime: 'Choose a time.',
+      needName: 'Enter your name.',
+      needPhone: 'Enter your phone number.',
+      needEmail: 'Enter your email.',
+      slotGone: '{time} is no longer free for this date and party size. Choose another time.',
       at: 'at',
       generic: 'The connection failed. Please try again in a moment.',
       callUs: 'Call',
@@ -640,6 +652,15 @@
     '.klar-btn,.klar-add{min-height:48px}',
     '}',
     '.klar-err{margin:12px 0 0;color:#a3341f;font-size:.9rem}',
+    /* A field the guest still has to fill in: red border and its own line
+       underneath, where the eye is, rather than only the summary above the
+       button. The time grid has no border of its own, so it gets an outline. */
+    '.klar-field.klar-missing input,.klar-field.klar-missing select,' +
+    '.klar-field.klar-missing textarea{border-color:#a3341f;box-shadow:0 0 0 1px #a3341f}',
+    '.klar-field.klar-missing .klar-slots{outline:1px solid #a3341f;outline-offset:6px;' +
+    'border-radius:var(--klar-radius)}',
+    '.klar-field-err{margin:6px 0 0;color:#a3341f;font-size:.85rem}',
+    '.klar-field-err:empty{display:none}',
     '.klar-note{margin:10px 0 0;font-size:.78rem;color:var(--klar-muted)}',
     '.klar-ok{text-align:center;padding:26px 0}',
     '.klar-check{font-size:2rem;line-height:1}',
@@ -1472,6 +1493,32 @@
       if (message && more && el('bdiet').value.trim()) more.open = true;
     }
 
+    /* A fault is shown AT the field, not only in the line above the button.
+       On a phone that line sits below the fold: a guest who pressed Book with
+       no time chosen saw the page jump to the time grid and nothing else —
+       no red, no message — and read it as "sent". Two such attempts were then
+       reported as bookings that never got a confirmation (2026-09-13). So the
+       field itself goes red and says what it needs, and the first one is
+       scrolled into view. The note element is made on first use so the form
+       template stays as it is. */
+    function markField(target, message) {
+      var field = target && target.closest ? target.closest('.klar-field') : null;
+      if (!field) return;
+      var note = field.querySelector('.klar-field-err');
+      if (message) {
+        if (!note) {
+          note = doc.createElement('p');
+          note.className = 'klar-field-err';
+          field.appendChild(note);
+        }
+        note.textContent = message;
+        field.classList.add('klar-missing');
+      } else {
+        if (note) note.textContent = '';
+        field.classList.remove('klar-missing');
+      }
+    }
+
     /* How far the opening load will walk forward looking for a day that can
        actually be booked. A form that opens on "the restaurant is closed on
        this day" reads as broken rather than as closed — the guest is left to
@@ -1484,7 +1531,14 @@
 
     function loadSlots(hunt) {
       var search = typeof hunt === 'number' ? hunt : 0;
+      /* The time the guest already chose is kept across a party-size or date
+         change when it is still free, and named when it is not. It used to be
+         cleared silently on every reload: pick 20:00, then step the party
+         from 2 to 4, and the choice was gone with nothing on screen to say
+         so — Book then failed for "no time" on a form that looked complete. */
+      var wanted = chosenSlot;
       chosenSlot = '';
+      markField(slotsEl, '');
       if (!dateEl.value) {
         slotsEl.innerHTML = '<span class="klar-muted">—</span>';
         return;
@@ -1524,12 +1578,21 @@
           }
           slotsEl.innerHTML = slots
             .map(function (slot) {
+              var kept = slot.available && slot.time === wanted;
               return (
                 '<button type="button" data-klar-slot="' + esc(slot.time) + '"' +
-                (slot.available ? '' : ' disabled') + '>' + esc(hhmm(slot.time)) + '</button>'
+                (slot.available ? '' : ' disabled') + (kept ? ' class="klar-on"' : '') + '>' +
+                esc(hhmm(slot.time)) + '</button>'
               );
             })
             .join('');
+          if (wanted) {
+            var stillFree = slots.some(function (slot) {
+              return slot.available && slot.time === wanted;
+            });
+            if (stillFree) chosenSlot = wanted;
+            else markField(slotsEl, t.slotGone.replace('{time}', hhmm(wanted)));
+          }
         })
         .catch(function (error) {
           warn(
@@ -1555,9 +1618,21 @@
         esc(people === 1 ? t.person : t.people) + '</p>' +
         '<div class="klar-big">' + esc(confirmed.date || dateEl.value) + ' ' + esc(t.at) + ' ' +
         esc(hhmm(confirmed.time_slot || chosenSlot)) + '</div>' +
-        '<p class="klar-muted">' + esc(t.bookConfirm) + '</p>' +
+        /* The address is printed back so a typo is caught here, by the one
+           person who can see it, and not a week later by a guest who "never
+           got the email". */
+        '<p class="klar-muted">' +
+        esc(t.bookConfirm.replace('{email}', el('bemail').value.trim())) + '</p>' +
         '<button type="button" class="klar-btn" data-klar="book-again" style="margin-top:20px">' +
         esc(t.bookAgain) + '</button>';
+      /* The form the guest was at the bottom of has just collapsed above them;
+         on a phone that leaves whatever sat under the form on screen and the
+         tick out of sight. Bring it into view so "booked" is what they read. */
+      try {
+        ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (error) {
+        ok.scrollIntoView();
+      }
       el('book-again').addEventListener('click', function () {
         ok.hidden = true;
         el('book-live').hidden = false;
@@ -1591,6 +1666,7 @@
         if (!button || button.disabled) return;
         chosenSlot = button.dataset.klarSlot;
         showBookErr('');
+        markField(slotsEl, '');
         slotsEl.querySelectorAll('button').forEach(function (other) {
           other.classList.toggle('klar-on', other === button);
         });
@@ -1610,9 +1686,15 @@
          browser's own tooltip about the one that was not. Clear it on the first
          keystroke and let the next click say what is actually left. */
       ['bname', 'bphone', 'bemail'].forEach(function (field) {
-        el(field).addEventListener('input', function () { showBookErr(''); });
+        el(field).addEventListener('input', function () {
+          showBookErr('');
+          markField(el(field), '');
+        });
       });
-      dateEl.addEventListener('change', function () { showBookErr(''); });
+      dateEl.addEventListener('change', function () {
+        showBookErr('');
+        markField(dateEl, '');
+      });
 
       /* The tick appears only once there is an allergy to consent to, and an
          emptied field takes the tick away with it — otherwise a guest who
@@ -1626,36 +1708,41 @@
       bookBtn.addEventListener('click', function () {
         if (booking) return;
         var name = el('bname').value.trim();
-        var phone = combineDial(el('bphone-dial').value, el('bphone').value.trim());
+        /* The dial code alone is not a phone number. combineDial('+358', '')
+           returns '+358', which is truthy, so an empty phone field used to pass
+           this check and be refused by the server instead — with the refusal
+           printed in the line above the button rather than at the field. */
+        var phoneLocal = el('bphone').value.trim();
+        var phone = combineDial(el('bphone-dial').value, phoneLocal);
         var email = el('bemail').value.trim();
         var requests = el('breq').value.trim();
         var diet = el('bdiet').value.trim();
         var dietConsent = el('bdiet-consent').checked;
-        if (!dateEl.value || !chosenSlot || !name || !phone || !email) {
-          /* Name only what is actually empty. The old line listed all five
-             fields whatever the guest had already filled in, so someone who had
-             typed everything but the email was told to fill in the date, the
-             time and their own name — and went looking for a fault in the four
-             fields that were fine. */
-          var missing = [];
-          if (!dateEl.value) missing.push(t.fieldDate);
-          if (!chosenSlot) missing.push(t.fieldTime);
-          if (!name) missing.push(t.fieldName);
-          if (!phone) missing.push(t.fieldPhone);
-          if (!email) missing.push(t.fieldEmail);
+        var required = [
+          [!dateEl.value, dateEl, t.needDate, t.fieldDate],
+          [!chosenSlot, slotsEl, t.needTime, t.fieldTime],
+          [!name, el('bname'), t.needName, t.fieldName],
+          [!phoneLocal, el('bphone'), t.needPhone, t.fieldPhone],
+          [!email, el('bemail'), t.needEmail, t.fieldEmail]
+        ];
+        /* Name only what is actually empty. The old line listed all five
+           fields whatever the guest had already filled in, so someone who had
+           typed everything but the email was told to fill in the date, the
+           time and their own name — and went looking for a fault in the four
+           fields that were fine. */
+        var missing = [];
+        required.forEach(function (row) {
+          markField(row[1], row[0] ? row[2] : '');
+          if (row[0]) missing.push(row[3]);
+        });
+        if (missing.length) {
           showBookErr(joinFields(missing));
           /* On a phone the error line sits just above the button, which is
              where the thumb already is — and the field it is about can be two
              screens up, off the fold, with nothing pointing at it. So the first
              thing missing is scrolled to and focused. Desktop shows the whole
              form at once and never needed this; a phone does. */
-          focusFirstMissing([
-            [!dateEl.value, dateEl],
-            [!chosenSlot, slotsEl],
-            [!name, el('bname')],
-            [!phone, el('bphone')],
-            [!email, el('bemail')]
-          ]);
+          focusFirstMissing(required);
           return;
         }
         /* Refused here as well as on the server. The server is what makes it
