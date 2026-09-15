@@ -594,13 +594,20 @@
     '.klar-field input,.klar-field select,.klar-field textarea{width:100%;padding:11px 12px;',
     'border:1px solid var(--klar-line);border-radius:var(--klar-radius);font:inherit;',
     'background:transparent;color:inherit}',
-    /* Country button + number, with the flag list opening over the form. */
+    /* Country button + number, with the flag list opening over the form.
+       The picker itself is hidden on this site (2026-09-15): the operator wants
+       the one plain box Ani has. The button, the hidden +358 dial input and the
+       menu all stay in the DOM because the submit path binds to them, and
+       combineDial() returns a typed +xx number verbatim — so a foreign guest
+       still books by typing the country code, exactly as on Ani. */
     '.klar-phone{position:relative;display:flex;gap:8px}',
     '.klar-dial{display:flex;align-items:center;gap:6px;flex:0 0 auto;padding:0 10px;',
     'min-height:46px;border:1px solid var(--klar-line);border-radius:var(--klar-radius);',
     'background:transparent;color:inherit;font:inherit;cursor:pointer}',
     '.klar-dial img{width:20px;height:15px;object-fit:cover;display:block}',
     '.klar-caret{font-size:.7rem;color:var(--klar-muted)}',
+    /* …and here it is switched off again, after the rules that draw it. */
+    '.klar-dial,.klar-dial-menu{display:none}',
     '.klar-dial-menu{position:absolute;z-index:30;top:calc(100% + 4px);left:0;width:280px;',
     'max-width:92vw;border:1px solid var(--klar-line);border-radius:var(--klar-radius);',
     'background:#fff;color:#111;box-shadow:0 10px 30px rgba(0,0,0,.15)}',
@@ -864,7 +871,8 @@
           '<input type="text" class="klar-dial-search" data-klar="bphone-dial-search" ' +
           'placeholder="' + esc(t.countryCode) + '" autocomplete="off">' +
           '<div class="klar-dial-list" role="listbox">' + DIAL_OPTIONS + '</div></div>' +
-          '<input type="tel" autocomplete="tel" data-klar="bphone"></div></div>' +
+          '<input type="tel" autocomplete="tel" data-klar="bphone" ' +
+          'placeholder="+358 40 123 4567"></div></div>' +
           '<div class="klar-field"><label>' + esc(t.email) + '</label>' +
           '<input type="email" autocomplete="email" data-klar="bemail"></div></div>' +
           /* Both optional boxes live behind one closed <details>. Native, so it
