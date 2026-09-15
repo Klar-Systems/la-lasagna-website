@@ -203,43 +203,56 @@ body {
   letter-spacing: 0.01em;
   opacity: 0.92;
 }
-.lala-tel {                                /* tappable phone button — matches the
-                                              "Learn more" / Instagram buttons */
+.lala-tel {                                /* tappable phone button — filled white on
+                                              the dark section, so the number is the
+                                              loudest thing under the form instead of
+                                              a thin outline that reads as decoration */
   display: inline-block;
   text-decoration: none;
-  background: transparent;
-  color: #ffffff !important;
-  border: 1px solid #ffffff;
-  border-radius: 10px;
-  font-size: 1.4rem;
+  background: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 12px;
+  font-size: clamp(1.35rem, 5.2vw, 1.9rem);
+  font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  padding: 10px 22px;
+  padding: 14px 30px;
   transition: background 0.15s ease, color 0.15s ease;
 }
-/* The number text is wrapped in Squarespace's .sqsrte-text-color--white span,
-   which resolves to hsl(var(--white-hsl)) (an off-white on this dark section) and
-   beats the <a>'s colour. Force the inner text pure white too. */
+/* The number is wrapped in Squarespace's .sqsrte-text-color--white span, which
+   resolves to hsl(var(--white-hsl)) and beats the <a>'s colour, and the <strong>
+   around it picks up the theme's link underline. Force both. */
 .lala-tel,
 .lala-tel span,
-.lala-tel strong { color: #ffffff !important; }
+.lala-tel strong { color: #1c1a17 !important; text-decoration: none !important; }
 .lala-tel:hover,
 .lala-tel:hover span,
-.lala-tel:hover strong { background: #ffffff; color: #1c1a17 !important; }
-.lala-tel:hover { background: #ffffff; }
+.lala-tel:hover strong { background: transparent; color: #ffffff !important; }
+.lala-tel:hover { background: transparent; }
+/* The <p> holding the number carries Squarespace's white-space:pre-wrap, which beats
+   the nowrap on the <a>: at this size the number broke across two lines without it. */
+.fe-block-523cda3f8fca79c5cf2b .sqs-html-content p { white-space: nowrap !important; }
 /* Desktop only: put the "You can also book by calling us" heading + phone number
    ABOVE the photo (authored order was photo -> text -> number). Reassign their grid
    rows so text+number sit just above the picture, and push the picture down below
    them. Columns are kept from the authored layout. */
 @media (min-width: 768px) {
+  .fe-block-yui_3_17_2_1_1780063472404_3468 {  /* "Your table is confirmed…" — was
+                                                  seven rows tall for one line, and
+                                                  that dead band is what pushed the
+                                                  number ~390px below the form */
+    grid-row: 23 / 26 !important;
+  }
   .fe-block-916612e5e07cbc8f0eba {           /* heading — above the picture */
-    grid-row: 30 / 32 !important;
+    grid-row: 26 / 28 !important;
     align-self: end !important;
     padding-top: 28px !important;
     border-top: 1px solid rgba(255, 255, 255, 0.14);
   }
   .fe-block-523cda3f8fca79c5cf2b {           /* phone pill — right under the heading */
-    grid-row: 32 / 34 !important;
+    grid-row: 28 / 30 !important;
+    grid-column: 8 / 20 !important;  /* the authored 6 columns are narrower than the
+                                        number is at this size */
     align-self: start !important;
     margin-top: 16px !important;   /* a little more space below the heading */
   }
@@ -1180,8 +1193,8 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     margin-top: 14px !important;    /* number sits close under the text above it */
   }
   .lala-tel {
-    font-size: 1.2rem;
-    padding: 10px 22px;
+    font-size: 1.6rem;   /* was 1.2rem — the number is the point of this block */
+    padding: 13px 26px;
   }
 
   /* 3) Trim the gap between a heading and the block directly under it. The
