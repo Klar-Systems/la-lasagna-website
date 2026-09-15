@@ -212,11 +212,11 @@ body {
   background: #ffffff;
   border: 2px solid #ffffff;
   border-radius: 12px;
-  font-size: clamp(1.35rem, 5.2vw, 1.9rem);
+  font-size: 1.4rem;   /* the authored size — the fill is what makes it visible */
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  padding: 14px 30px;
+  padding: 10px 22px;
   transition: background 0.15s ease, color 0.15s ease;
 }
 /* The number is wrapped in Squarespace's .sqsrte-text-color--white span, which
@@ -1212,8 +1212,8 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     margin-top: 10px !important;
   }
   .lala-tel {
-    font-size: 1.6rem;   /* was 1.2rem — the number is the point of this block */
-    padding: 13px 26px;
+    font-size: 1.2rem;   /* the authored phone size */
+    padding: 10px 22px;
   }
 
   /* 3) Trim the gap between a heading and the block directly under it. The
