@@ -1176,21 +1176,40 @@ section[data-section-id="6989e82883d7eb240f7d7052"] img {
     transform: none !important;
     object-fit: cover !important;
   }
-  /* The "…book by calling us" heading block reserves ~140px of grid-row height but
-     its single line of text is only ~21px tall, leaving ~100px of dead space below
-     the text before the phone pill. Collapse the block to its content height and
-     pull the pill up so the number sits right under the text. */
-  .fe-block-916612e5e07cbc8f0eba {
+  /* Contact / Book a table on phones: stop fighting the authored grid, the way the
+     home page section below already does. Squarespace gave one line of text twelve
+     grid rows and left nine more rows empty between it and the heading, so the
+     number sat ~680px below the form — off screen for anyone who had just used it.
+     Replace the fluid-engine with a flex column and order the blocks; every gap is
+     then content height plus one gap. The side gutter is Squarespace's own, because
+     a flex child no longer inherits the grid's columns. */
+  section[data-section-id="67dc02dfc6808548e4c5e6f4"] .fluid-engine {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    padding-inline: var(--sqs-mobile-site-gutter, 6vw) !important;
+  }
+  section[data-section-id="67dc02dfc6808548e4c5e6f4"] .fe-block {
+    grid-row: auto !important;
+    grid-column: auto !important;
     height: auto !important;
     min-height: 0 !important;
-    align-self: start !important;
-    margin-bottom: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
   }
-  .fe-block-523cda3f8fca79c5cf2b {
-    align-self: start !important;
-    grid-row: 54 / 55 !important;   /* directly under the heading (row 53) instead
-                                       of its authored row 57, which floated it low */
-    margin-top: 14px !important;    /* number sits close under the text above it */
+  section[data-section-id="67dc02dfc6808548e4c5e6f4"] .fe-block-b3766f5ed3c3d3b63412 { order: 1; }   /* "Contact us / Book a table!" */
+  section[data-section-id="67dc02dfc6808548e4c5e6f4"] .fe-block-ff836d0dbec64fbc484c { order: 2; }   /* "Pick a time…" */
+  section[data-section-id="67dc02dfc6808548e4c5e6f4"] .fe-block-cf4174182feb715cfe07 { order: 3; }   /* the booking form */
+  section[data-section-id="67dc02dfc6808548e4c5e6f4"] .fe-block-yui_3_17_2_1_1780063472404_3468 { order: 4; }  /* "Your table is confirmed…" */
+  section[data-section-id="67dc02dfc6808548e4c5e6f4"] .fe-block-916612e5e07cbc8f0eba {              /* "…book by calling us" */
+    order: 5;
+    padding-top: 18px !important;
+  }
+  section[data-section-id="67dc02dfc6808548e4c5e6f4"] .fe-block-523cda3f8fca79c5cf2b { order: 6; }   /* the number */
+  section[data-section-id="67dc02dfc6808548e4c5e6f4"] .fe-block-yui_3_17_2_1_1764702229989_13421 {  /* the photo */
+    order: 7;
+    margin-top: 10px !important;
   }
   .lala-tel {
     font-size: 1.6rem;   /* was 1.2rem — the number is the point of this block */
