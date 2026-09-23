@@ -378,8 +378,7 @@
          verifies, and the table they believe they hold does not exist. */
       verifyTitle: 'Vahvista sähköpostisi',
       verifyBody:
-        'Lähetimme vahvistuslinkin osoitteeseen {email}. Pöytäsi on varattu vasta, kun painat linkkiä.',
-      verifySpam: 'Jos viestiä ei näy, tarkista roskapostikansio.',
+        'Lähetimme linkin osoitteeseen {email}. Pöytäsi on varattu vasta, kun painat linkkiä.',
       verifyClose: 'Selvä',
       /* `{fields}` is the list of the ones actually left empty, built at the
          click. The old copy named all five every time. */
@@ -473,10 +472,9 @@
       bookOk: 'Table booked',
       bookConfirm: 'A confirmation was sent to {email}. If it does not arrive, check your spam folder.',
       bookAgain: 'Make another booking',
-      verifyTitle: 'Please confirm your email',
+      verifyTitle: 'Confirm your email',
       verifyBody:
-        'We sent a confirmation link to {email}. Your table is booked only once you press it.',
-      verifySpam: 'If it does not arrive, check your spam folder.',
+        'We sent a link to {email}. Your table is booked only once you press it.',
       verifyClose: 'OK',
       bookFields: 'Still needed: {fields}.',
       fieldDate: 'the date',
@@ -1670,8 +1668,7 @@
       ok.innerHTML =
         '<div class="klar-check">✉</div><h3>' + esc(t.verifyTitle) + '</h3>' +
         '<p class="klar-muted">' +
-        esc(t.verifyBody.replace('{email}', email)) + '</p>' +
-        '<p class="klar-muted">' + esc(t.verifySpam) + '</p>';
+        esc(t.verifyBody.replace('{email}', email)) + '</p>';
       /* Same reason as showBookOk: the form just collapsed above the guest, so
          on a phone this panel can render off-screen entirely. */
       try {
