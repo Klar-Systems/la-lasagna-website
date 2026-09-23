@@ -372,6 +372,15 @@
       bookOk: 'Pöytä varattu',
       bookConfirm: 'Vahvistus lähetettiin osoitteeseen {email}. Jos se ei näy, tarkista roskapostikansio.',
       bookAgain: 'Tee uusi varaus',
+      /* A venue with email verification on (0076): Book mails a link and
+         NOTHING is booked until the guest presses it. This must never read as
+         "Pöytä varattu" — a guest who reads that closes the page and never
+         verifies, and the table they believe they hold does not exist. */
+      verifyTitle: 'Vahvista sähköpostisi',
+      verifyBody:
+        'Lähetimme vahvistuslinkin osoitteeseen {email}. Pöytäsi on varattu vasta, kun painat linkkiä.',
+      verifySpam: 'Jos viestiä ei näy, tarkista roskapostikansio.',
+      verifyClose: 'Selvä',
       /* `{fields}` is the list of the ones actually left empty, built at the
          click. The old copy named all five every time. */
       bookFields: 'Täytä vielä {fields}.',
@@ -464,6 +473,11 @@
       bookOk: 'Table booked',
       bookConfirm: 'A confirmation was sent to {email}. If it does not arrive, check your spam folder.',
       bookAgain: 'Make another booking',
+      verifyTitle: 'Please confirm your email',
+      verifyBody:
+        'We sent a confirmation link to {email}. Your table is booked only once you press it.',
+      verifySpam: 'If it does not arrive, check your spam folder.',
+      verifyClose: 'OK',
       bookFields: 'Still needed: {fields}.',
       fieldDate: 'the date',
       fieldTime: 'a time',
@@ -1645,6 +1659,28 @@
         });
     }
 
+    /* The 202 panel. Deliberately NOT showBookOk with different words: no tick,
+       no date, no "book again" — every one of those reads as done. The guest has
+       one job left and the screen says only that. Ported from the canonical
+       embed (packages/pipeline/embeds/klar-embed.js), which this fork predates. */
+    function showVerifyEmail(email) {
+      el('book-live').hidden = true;
+      var ok = el('book-ok');
+      ok.hidden = false;
+      ok.innerHTML =
+        '<div class="klar-check">✉</div><h3>' + esc(t.verifyTitle) + '</h3>' +
+        '<p class="klar-muted">' +
+        esc(t.verifyBody.replace('{email}', email)) + '</p>' +
+        '<p class="klar-muted">' + esc(t.verifySpam) + '</p>';
+      /* Same reason as showBookOk: the form just collapsed above the guest, so
+         on a phone this panel can render off-screen entirely. */
+      try {
+        ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (error) {
+        ok.scrollIntoView();
+      }
+    }
+
     function showBookOk(name, confirmed) {
       el('book-live').hidden = true;
       var ok = el('book-ok');
@@ -1925,6 +1961,14 @@
                 : '';
               showBookErr(detail || result.body.error || t.generic + callUs());
               if (result.body.code === 'SLOT_TAKEN') loadSlots();
+              return;
+            }
+            /* 202: the venue asks the guest to prove the address first. Nothing
+               is booked yet, so this is NOT the "booked" panel. Before this
+               branch existed the 202 fell through to showBookOk and the guest
+               was told "Pöytä varattu" for a table that did not exist. */
+            if (result.status === 202 && result.body.status === 'verification_required') {
+              showVerifyEmail(result.body.email || el('bemail').value.trim());
               return;
             }
             showBookOk(payload.guest_name, result.body.booking || {});
