@@ -154,6 +154,53 @@ body {
   padding-bottom: clamp(64px, 7vh, 104px) !important;
 }
 
+/* --- ...but stop that padding being counted twice (desktop) ----------------
+   The rule above sets padding-top on the section AND on its own
+   .content-wrapper, so every section carried 2 x 135px = 270px of dead space at
+   a 900px-tall window, and 2 x 200px on a tall screen — measured 270px above
+   "Happy hours", 314px above "Book a table!", 388px above "Who we are", where
+   Squarespace itself authored 0-58px on the home page. Keep one copy, on the
+   section. The first section keeps a larger floor of its own, because the
+   header is position:absolute and sits on top of it. Home page at 1440x900:
+   8637px -> 7692px. Desktop only; the <=767px layout is left as tuned. */
+@media (min-width: 768px) {
+  .page-section.section-height--custom > .content-wrapper,
+  .page-section.section-height--small > .content-wrapper,
+  .page-section.section-height--medium > .content-wrapper {
+    padding-top: 0 !important;
+  }
+  #sections > section.page-section:first-child {
+    padding-top: clamp(190px, 20vh, 240px) !important;
+  }
+}
+
+/* --- Header logo: the eight nav links belong on one line -------------------
+   The mirror carries Squarespace's site-logo height setting (266px), which
+   renders the logo 557px wide and leaves the nav 438px of the 1324px header
+   row for links that need ~608px — so the nav wrapped to two rows on every
+   screen below ~1600px, and to four below ~1200px. Capping the logo to 140px
+   (293px wide) puts all eight on one line from ~1250px up and halves the
+   header, 292px -> 166px. Desktop only; the <=767px rule above caps it at
+   150px and the phone header shows the mobile logo anyway. */
+@media (min-width: 768px) {
+  .header-display-desktop .header-title-logo a,
+  .header-display-desktop .header-title-logo img {
+    max-height: 140px !important;
+  }
+}
+/* Between the burger breakpoint (1024px) and 1440px the authored 1vw gap on
+   each side of a link is still wider than the row has to give, so the eight
+   links keep wrapping on a 1280px laptop — at 1440 they needed 566px of a
+   566px row. Tighten the gap to 8px there; wider screens keep the authored
+   1vw. Measured one row from 1280px up; at 1200px and below the row genuinely
+   cannot hold logo + eight links + the language picker, and wraps to two. */
+@media (min-width: 768px) and (max-width: 1439px) {
+  .header-display-desktop .header-nav-item {
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+  }
+}
+
 /* --- Who We Are: close the void below the video ---------------------------
    The video block spans the section's lower grid rows but the <video> renders
    shorter than the cell it was given, leaving a tall empty band before the

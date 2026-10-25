@@ -9,12 +9,12 @@
     en: {
       sending: "Sending…",
       ok: "Thank you! Your reservation request has been sent — we'll get back to you soon.",
-      err: "Sorry, something went wrong. Please email lalasagnahelsinki@gmail.com or call +358 40 365 1664.",
+      err: "Sorry, something went wrong. Please email lalasagnahelsinki@gmail.com or call +358 44 983 5600.",
     },
     fi: {
       sending: "Lähetetään…",
       ok: "Kiitos! Varauspyyntösi on lähetetty — otamme sinuun pian yhteyttä.",
-      err: "Pahoittelut, jokin meni pieleen. Lähetä sähköpostia osoitteeseen lalasagnahelsinki@gmail.com tai soita +358 40 365 1664.",
+      err: "Pahoittelut, jokin meni pieleen. Lähetä sähköpostia osoitteeseen lalasagnahelsinki@gmail.com tai soita +358 44 983 5600.",
     },
   };
   function t(k) {
