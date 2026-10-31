@@ -1597,6 +1597,13 @@
           cfg.api + '/api/' + encodeURIComponent(cfg.bookSlug) + '/availability?date=' +
             encodeURIComponent(dateEl.value) + '&party_size=' + encodeURIComponent(partyEl.value)
         )
+        .then(null, function () {
+          /* Named here, the one place it is known: a rejection before any
+             answer is the guest's connection, and the beacon below reports it
+             as status 0. Anything thrown after an answer is a reply that could
+             not be read, which must not pass for the guest's network. */
+          throw new Error('network');
+        })
         .then(function (response) {
           if (!response.ok) throw new Error('availability ' + response.status);
           return response.json();
@@ -1649,7 +1656,10 @@
             error
           );
           var failed = /availability (\d+)$/.exec(String(error && error.message));
-          track('widget_failed', { reason: 'availability', status: failed ? Number(failed[1]) : 0 });
+          track('widget_failed', {
+            reason: failed || (error && error.message === 'network') ? 'availability' : 'availability_unreadable',
+            status: failed ? Number(failed[1]) : 0
+          });
           slotsEl.innerHTML =
             '<span class="klar-muted">' +
             esc((/ 404$/.test(error.message) ? t.bookingOff : t.slotsFailed) + callUs()) +
