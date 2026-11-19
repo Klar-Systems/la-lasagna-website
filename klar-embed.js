@@ -286,6 +286,13 @@
   function combineDial(dial, local) {
     var v = (local || '').replace(/[^\d+]/g, '');
     if (v.charAt(0) === '+') return v;
+    /* "0046 70 123 45 67" is a Swedish number written the way half of Europe
+       writes it. Dropping the zeros and putting the picked +358 in front
+       stored +35846701234567, a Finnish number that is not the guest's, or
+       got the guest refused in Finnish on the English page (klar-console
+       audit 2026-11-19, WIDGET-01). 00 is the international prefix: it means
+       "+", whatever the picker says. */
+    if (v.slice(0, 2) === '00') return '+' + v.slice(2).replace(/^0+/, '');
     return (dial || '') + v.replace(/^0+/, '');
   }
 
