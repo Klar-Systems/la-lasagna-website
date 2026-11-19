@@ -127,10 +127,31 @@
     watchMounts();
   }
 
+  /* A re-mount carries what the guest had typed: the old mount hands over a
+     snapshot (klar-embed.js, klarSnapshot) and the new one picks it up from
+     `klarRestore`. It used to throw the date, the time and every field away
+     (klar-console audit 2026-11-19, WIDGET-17).
+
+     Two states are left in the language they are in. A booking in flight:
+     its answer would land on a node no longer in the page, and the guest
+     would see an empty form instead of a confirmation. And a result on screen
+     — "check your email", "table booked" — which is the guest's record. Both
+     re-mount once the embed says the form is free again ('klar:settled'). */
+  var waiting = false;
   function remount(lang) {
     var changed = false;
     mounts().forEach(function (el) {
       if (el.getAttribute('data-klar-locale') === lang && el.dataset.klarMounted !== '1') return;
+      var snap = null;
+      try {
+        snap = typeof el.klarSnapshot === 'function' ? el.klarSnapshot() : null;
+      } catch (e) {
+        snap = null;
+      }
+      if (snap && (snap.busy || snap.done)) {
+        waiting = true;
+        return;
+      }
       var fresh = document.createElement('div');
       for (var i = 0; i < el.attributes.length; i++) {
         var a = el.attributes[i];
@@ -138,6 +159,7 @@
         fresh.setAttribute(a.name, a.value);
       }
       fresh.setAttribute('data-klar-locale', lang);
+      if (snap) fresh.klarRestore = snap;
       el.parentNode.replaceChild(fresh, el);
       changed = true;
     });
@@ -147,6 +169,12 @@
     s.onload = watchMounts;
     document.body.appendChild(s);
   }
+  document.addEventListener('klar:settled', function () {
+    if (!waiting) return;
+    waiting = false;
+    /* Let the embed finish drawing its answer before the form is replaced. */
+    setTimeout(function () { remount(last); }, 0);
+  });
 
   /* lala-lang.js sets <html lang> on every switch and does not reload the page */
   var last = document.documentElement.getAttribute('lang') || 'en';
