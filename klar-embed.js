@@ -56,7 +56,18 @@
   var DEFAULT_API = 'https://booking.klarsystems.com';
   var LOCAL_API = 'http://localhost:3001';
   var PARTY_MAX_DEFAULT = 12;
-  var BOOKING_HORIZON_DAYS = 90; /* the API's ceiling */
+  /* How far ahead a table can be booked, until the availability answer names
+     the venue's own horizon (`booking_horizon_days`). This was a literal 90
+     while the server takes 180, so every date from three months on was greyed
+     out here and never reached the restaurant (klar-console audit 2026-11-19,
+     WIDGET-04). 180 is the server's own default. */
+  var BOOKING_HORIZON_DAYS = 180;
+  /* Deadlines. A stalled connection never rejects, so a fetch without one
+     hangs for good: the grid read "Looking for free times…" for ever, and the
+     button stayed on "Booking…" and disabled (WIDGET-09, WIDGET-15). 20 s is
+     the deadline Ani's form and the hosted embed have used since 2026-09. */
+  var AVAIL_TIMEOUT_MS = 12000;
+  var BOOK_TIMEOUT_MS = 20000;
 
   var COUNTRIES = [
     ["FI","+358","Finland"],
@@ -286,6 +297,13 @@
   function combineDial(dial, local) {
     var v = (local || '').replace(/[^\d+]/g, '');
     if (v.charAt(0) === '+') return v;
+    /* "0046 70 123 45 67" is a Swedish number written the way half of Europe
+       writes it. Dropping the zeros and putting the picked +358 in front
+       stored +35846701234567, a Finnish number that is not the guest's, or
+       got the guest refused in Finnish on the English page (klar-console
+       audit 2026-11-19, WIDGET-01). 00 is the international prefix: it means
+       "+", whatever the picker says. */
+    if (v.slice(0, 2) === '00') return '+' + v.slice(2).replace(/^0+/, '');
     return (dial || '') + v.replace(/^0+/, '');
   }
 
@@ -378,7 +396,7 @@
          verifies, and the table they believe they hold does not exist. */
       verifyTitle: 'Vahvista sähköpostisi',
       verifyBody:
-        'Lähetimme linkin osoitteeseen {email}. Pöytäsi on varattu vasta, kun painat linkkiä.',
+        'Tarkista sähköpostisi: lähetimme vahvistuslinkin osoitteeseen {email}. Varausta ei ole vielä tehty — pöytäsi on varattu vasta, kun painat linkkiä. Jos viestiä ei näy, tarkista roskapostikansio.',
       verifyClose: 'Selvä',
       /* `{fields}` is the list of the ones actually left empty, built at the
          click. The old copy named all five every time. */
@@ -400,6 +418,46 @@
       callUs: 'Soita',
       badPhone: 'Tarkista puhelinnumero (esim. +358 40 123 4567).',
       tooMany: 'Liikaa yrityksiä. Odota hetki ja yritä uudelleen.',
+      slotsTimeout: 'Vapaat ajat eivät vastanneet ajoissa. Päivitä sivu tai yritä hetken päästä uudelleen.',
+      noMoreToday: 'Tänään ei ole enää varattavia aikoja verkossa. Valitse toinen päivä.',
+      partyTooLarge: 'Näin suurta seuruetta ei voi varata verkossa.',
+      partyMaxOnline: 'Verkossa voi varata enintään {n} hengelle.',
+      setupIncomplete: 'Verkkovaraus ei ole vielä käytössä.',
+      tooFar: 'Pöydän voi varata enintään {days} päivää eteenpäin, eli {date} asti. Valitse aiempi päivä.',
+      /* The three ways a booking's answer can go missing, and the one thing
+         to do about each. With email verification on, a request that DID
+         arrive booked nothing yet — it mailed a link — so the inbox is the
+         answer, and pressing again would only mail a second link. */
+      bookTimeout: 'Ravintola ei vastannut ajoissa, emmekä tiedä, ehtikö varaus perille.',
+      bookNetwork: 'Yhteys katkesi, emmekä tiedä, ehtikö varaus perille.',
+      bookUnreadable: 'Emme saaneet vastausta luettua, emmekä tiedä, ehtikö varaus perille.',
+      bookCheckEmail: 'Katso ensin sähköpostisi: jos sinne tuli vahvistuslinkki tai varausvahvistus, varaus ehti perille — älä varaa uudelleen. Jos viestiä ei tule muutamassa minuutissa, yritä uudelleen.',
+      linkSent: 'Tähän osoitteeseen lähetettiin juuri vahvistuslinkki. Tarkista sähköpostisi, myös roskapostikansio.',
+      bookCheck: 'Tarkista varauksen tiedot.',
+      /* Booking refusals by the server's CODE. The server writes its own
+         sentences in Finnish, and the English form printed them as they came
+         (WIDGET-08); the code is read, the sentence never is. */
+      bookCodes: {
+        SLOT_TAKEN: 'Tämä aika ehdittiin juuri varata. Valitse toinen aika.',
+        TABLE_OCCUPIED: 'Tämä aika ehdittiin juuri varata. Valitse toinen aika.',
+        DUPLICATE_BOOKING: 'Tällä puhelinnumerolla on jo varaus tälle päivälle. Jos haluat muuttaa sitä, soita ravintolaan.',
+        BOOKING_REFUSED: 'Tätä varausta ei voi tehdä verkossa. Ota yhteyttä suoraan ravintolaan.',
+        SETUP_INCOMPLETE: 'Verkkovaraus ei ole vielä käytössä. Soita ravintolaan.',
+        VALIDATION_ERROR: 'Tätä aikaa ei voi enää varata verkossa. Valitse toinen aika.',
+        VERIFICATION_EMAIL_SUPPRESSED: 'Tähän sähköpostiosoitteeseen ei voi lähettää viestejä. Käytä toista osoitetta.',
+        VERIFICATION_EMAIL_FAILED: 'Vahvistusviestiä ei saatu lähetettyä. Yritä hetken päästä uudelleen.',
+        DEPOSIT_REQUIRED: 'Näin suuren seurueen varaus vahvistetaan varausmaksulla, jota ei voi maksaa tällä sivulla. Soita ravintolaan.'
+      },
+      /* Per-field refusals, keyed by the field the server names. */
+      bookFields: {
+        guest_name: 'Tarkista nimi.',
+        guest_email: 'Tarkista sähköpostiosoite.',
+        party_size: 'Tarkista seurueen koko.',
+        date: 'Tarkista päivämäärä.',
+        time_slot: 'Valitse aika.',
+        special_requests: 'Toiveet saavat olla enintään 500 merkkiä.',
+        dietary_notes: 'Tarkista allergiatiedot: enintään 500 merkkiä, ja suostumus rastitettuna.'
+      },
       codes: {
         ORDER_REJECTED: 'Jokin valitsemasi annos ei ole juuri nyt saatavilla. Poista se tilauksesta.',
         VALIDATION_ERROR: 'Tarkista tilauksen tiedot.',
@@ -474,7 +532,7 @@
       bookAgain: 'Make another booking',
       verifyTitle: 'Confirm your email',
       verifyBody:
-        'We sent a link to {email}. Your table is booked only once you press it.',
+        'Check your email: we sent a confirmation link to {email}. There is no booking yet — your table is booked only once you press the link. If it does not arrive, check your spam folder.',
       verifyClose: 'OK',
       bookFields: 'Still needed: {fields}.',
       fieldDate: 'the date',
@@ -494,6 +552,38 @@
       callUs: 'Call',
       badPhone: 'Check the phone number (e.g. +358 40 123 4567).',
       tooMany: 'Too many attempts. Wait a moment and try again.',
+      slotsTimeout: 'The free times did not answer in time. Refresh the page or try again in a moment.',
+      noMoreToday: 'There are no more times to book online today. Choose another day.',
+      partyTooLarge: 'A party this size cannot be booked online.',
+      partyMaxOnline: 'Online bookings are for up to {n} people.',
+      setupIncomplete: 'Online booking is not available yet.',
+      tooFar: 'A table can be booked up to {days} days ahead, so until {date}. Choose an earlier date.',
+      bookTimeout: 'The restaurant did not answer in time, and we do not know whether your booking arrived.',
+      bookNetwork: 'The connection dropped, and we do not know whether your booking arrived.',
+      bookUnreadable: 'We could not read the answer, and we do not know whether your booking arrived.',
+      bookCheckEmail: 'Check your email first: if a confirmation link or a confirmation has arrived, it did — do not book again. If nothing arrives within a few minutes, try again.',
+      linkSent: 'A confirmation link was just sent to this address. Check your email, including the spam folder.',
+      bookCheck: 'Check the booking details.',
+      bookCodes: {
+        SLOT_TAKEN: 'That time was just taken. Choose another time.',
+        TABLE_OCCUPIED: 'That time was just taken. Choose another time.',
+        DUPLICATE_BOOKING: 'This phone number already has a booking for that day. To change it, call the restaurant.',
+        BOOKING_REFUSED: 'This booking cannot be made online. Please contact the restaurant directly.',
+        SETUP_INCOMPLETE: 'Online booking is not available yet. Please call the restaurant.',
+        VALIDATION_ERROR: 'That time can no longer be booked online. Choose another time.',
+        VERIFICATION_EMAIL_SUPPRESSED: 'We cannot send email to this address. Please use another email address.',
+        VERIFICATION_EMAIL_FAILED: 'The confirmation email could not be sent. Please try again in a moment.',
+        DEPOSIT_REQUIRED: 'A party this size is confirmed with a deposit, which cannot be paid on this page. Please call the restaurant.'
+      },
+      bookFields: {
+        guest_name: 'Check the name.',
+        guest_email: 'Check the email address.',
+        party_size: 'Check the number of guests.',
+        date: 'Check the date.',
+        time_slot: 'Choose a time.',
+        special_requests: 'The requests can be at most 500 characters.',
+        dietary_notes: 'Check the allergy details: at most 500 characters, with the consent box ticked.'
+      },
       codes: {
         ORDER_REJECTED: 'One of the dishes you picked is not available right now. Remove it from the order.',
         VALIDATION_ERROR: 'Check the order details.',
@@ -752,6 +842,91 @@
       .then(function (body) {
         return { ok: response.ok, status: response.status, body: body || {} };
       });
+  }
+
+  /* A fetch with a deadline. `timedOut` rides on the error because a timeout
+     needs different words from a refusal: after one we do not know whether a
+     booking landed. Ported from the canonical embed. */
+  function fetchWithTimeout(win, url, opts, ms) {
+    opts = opts || {};
+    var ctl = win.AbortController ? new win.AbortController() : null;
+    if (ctl) opts.signal = ctl.signal;
+    var timedOut = false;
+    var timer = setTimeout(function () {
+      timedOut = true;
+      if (ctl) ctl.abort();
+    }, ms);
+    return new Promise(function (resolve, reject) {
+      /* Without AbortController the request cannot be stopped, but the guest
+         is still answered: whichever settles first wins. */
+      var gaveUp = null;
+      if (!ctl) {
+        gaveUp = setTimeout(function () {
+          var e = new Error('timeout');
+          e.timedOut = true;
+          reject(e);
+        }, ms);
+      }
+      win.fetch(url, opts).then(
+        function (r) {
+          clearTimeout(timer);
+          if (gaveUp) clearTimeout(gaveUp);
+          resolve(r);
+        },
+        function (error) {
+          clearTimeout(timer);
+          if (gaveUp) clearTimeout(gaveUp);
+          if (timedOut) {
+            var e = new Error('timeout');
+            e.timedOut = true;
+            reject(e);
+            return;
+          }
+          reject(error);
+        }
+      );
+    });
+  }
+
+  /* What to tell the guest about a booking the server refused, in the form's
+     own language. Pure: the status, the parsed body and the copy in, one
+     sentence out ('' never). The server's own sentence is never printed — it
+     is written in Finnish, and La Lasagna's form is English first
+     (klar-console audit 2026-11-19, WIDGET-08).
+
+     The address limit and the per-IP limit share one code, RATE_LIMITED, and
+     need opposite advice ("wait" against "the link is already in your
+     inbox"). The API gives the second no code of its own yet, so its sentence
+     is the only thing that tells them apart; the code is read first, so the
+     day it gets one this match stops mattering. */
+  function bookRefusalText(status, body, t) {
+    body = body || {};
+    var code = body.code;
+    if (code === 'VERIFICATION_ALREADY_SENT' ||
+        (status === 429 && /vahvistuslinkki/i.test(String(body.error || '')))) return t.linkSent;
+    if (status === 429) return t.tooMany;
+    var named = [];
+    var fields = body.fields;
+    if (fields && typeof fields === 'object') {
+      Object.keys(fields).forEach(function (key) {
+        var text = key === 'guest_phone' ? t.badPhone : t.bookFields[key] || t.bookCheck;
+        if (named.indexOf(text) === -1) named.push(text);
+      });
+    }
+    if (named.length) return named.join(' · ');
+    if (code && t.bookCodes[code]) return t.bookCodes[code];
+    /* The ordinary "full at submit" refusal is a bare 409 with no code. */
+    if (status === 409) return t.bookCodes.SLOT_TAKEN;
+    if (status === 404) return t.bookingOff;
+    if (status === 400) return t.bookCheck;
+    return t.generic;
+  }
+
+  /* Whether that refusal means the times on screen are out of date. */
+  function refusalStalesGrid(status, body) {
+    body = body || {};
+    if (status === 409 && body.code !== 'DUPLICATE_BOOKING' && body.code !== 'SETUP_INCOMPLETE') return true;
+    return body.code === 'VALIDATION_ERROR' && !body.fields;
   }
 
   /* ---------------------------------------------------------------- config --- */
@@ -1577,38 +1752,79 @@
        stands and a closed day is answered honestly. */
     var OPENING_SEARCH_DAYS = 14;
 
+    /* Every load invalidates the ones before it. Without this a late answer
+       for the date the guest just left overwrote the grid for the date they
+       picked, and the time they had chosen was kept or dropped by whichever
+       answer happened to land last (klar-console audit 2026-11-19, WIDGET-15).
+       `wantedSlot` is the time the guest chose, carried across loads still in
+       flight: the second of two quick changes used to start with nothing
+       chosen, because the first had already cleared it. */
+    var slotReq = 0;
+    var wantedSlot = '';
+    /* Set by the guest's own change of date or party. The opening search
+       walks forward from today looking for a bookable day; once the guest has
+       picked, their date stands. It used to be moved: an answer for a closed
+       day landing after the pick ran plusDays on the GUEST's date (WIDGET-16). */
+    var userPicked = false;
+    var horizonDays = BOOKING_HORIZON_DAYS;
+
+    function readHorizon(data) {
+      var h = Number(data && data.booking_horizon_days);
+      if (!(h >= 1 && h <= 730 && Math.floor(h) === h)) return;
+      horizonDays = h;
+      dateEl.max = plusDays(todayIn(cfg.timezone), horizonDays);
+    }
+
+    function slotsMessage(text) {
+      slotsEl.innerHTML = '<span class="klar-muted">' + esc(text) + '</span>';
+    }
+
     function loadSlots(hunt) {
-      var search = typeof hunt === 'number' ? hunt : 0;
+      var search = typeof hunt === 'number' && !userPicked ? hunt : 0;
+      var seq = ++slotReq;
       /* The time the guest already chose is kept across a party-size or date
          change when it is still free, and named when it is not. It used to be
          cleared silently on every reload: pick 20:00, then step the party
          from 2 to 4, and the choice was gone with nothing on screen to say
          so — Book then failed for "no time" on a form that looked complete. */
-      var wanted = chosenSlot;
+      if (chosenSlot) wantedSlot = chosenSlot;
+      var wanted = wantedSlot;
       chosenSlot = '';
       markField(slotsEl, '');
-      if (!dateEl.value) {
+      var asked = dateEl.value;
+      if (!asked) {
         slotsEl.innerHTML = '<span class="klar-muted">—</span>';
         return;
       }
+      if (dateEl.max && asked > dateEl.max) {
+        wantedSlot = '';
+        slotsMessage(t.tooFar.replace('{days}', String(horizonDays)).replace('{date}', dateEl.max));
+        return;
+      }
       slotsEl.innerHTML = '<span class="klar-muted">' + esc(t.slotsLoading) + '</span>';
-      win
-        .fetch(
-          cfg.api + '/api/' + encodeURIComponent(cfg.bookSlug) + '/availability?date=' +
-            encodeURIComponent(dateEl.value) + '&party_size=' + encodeURIComponent(partyEl.value)
-        )
-        .then(null, function () {
+      fetchWithTimeout(
+        win,
+        cfg.api + '/api/' + encodeURIComponent(cfg.bookSlug) + '/availability?date=' +
+          encodeURIComponent(asked) + '&party_size=' + encodeURIComponent(partyEl.value),
+        {},
+        AVAIL_TIMEOUT_MS
+      )
+        .then(null, function (error) {
           /* Named here, the one place it is known: a rejection before any
-             answer is the guest's connection, and the beacon below reports it
-             as status 0. Anything thrown after an answer is a reply that could
-             not be read, which must not pass for the guest's network. */
-          throw new Error('network');
+             answer is the guest's connection (or the deadline), and the beacon
+             below reports it as status 0. Anything thrown after an answer is a
+             reply that could not be read, which must not pass for the guest's
+             network. */
+          var e = new Error(error && error.timedOut ? 'timeout' : 'network');
+          e.timedOut = !!(error && error.timedOut);
+          throw e;
         })
         .then(function (response) {
           if (!response.ok) throw new Error('availability ' + response.status);
           return response.json();
         })
         .then(function (data) {
+          if (seq !== slotReq) return;
           /* LA LASAGNA TAKES NO DEPOSIT — operator ruling 2026-09-10. The
              availability answer is ignored rather than read, so a
              `deposit_stripe` rule written on the tenant row later cannot arm
@@ -1616,19 +1832,43 @@
              so this fork stays close to the canonical embed. */
           depositRule = null;
           renderDeposit();
+          readHorizon(data);
           var slots = data.slots || [];
           var bookable = slots.some(function (slot) { return slot.available; });
-          if (!bookable && search > 0 && dateEl.value < dateEl.max) {
+          /* Three answers that no other date changes, so the opening search
+             must not walk past them, and none of them is "closed today". */
+          if (data.party_too_large) {
+            wantedSlot = '';
+            var max = Number(data.max_party_size);
+            slotsMessage(t.partyTooLarge + (max > 0 ? ' ' + t.partyMaxOnline.replace('{n}', String(max)) : '') + callUs());
+            return;
+          }
+          if (data.setup_incomplete) {
+            wantedSlot = '';
+            slotsMessage(t.setupIncomplete + callUs());
+            return;
+          }
+          if (!bookable && search > 0 && asked === dateEl.value && dateEl.value < dateEl.max) {
             dateEl.value = plusDays(dateEl.value, 1);
             loadSlots(search - 1);
             return;
           }
+          if (data.closed) {
+            wantedSlot = '';
+            slotsMessage(t.closed);
+            return;
+          }
           if (slots.length === 0) {
-            slotsEl.innerHTML = '<span class="klar-muted">' + esc(t.closed) + '</span>';
+            /* The server leaves today's past times out of the list
+               altogether, so after the last seating today's answer is []
+               on a day the restaurant is open (WIDGET-07). */
+            wantedSlot = '';
+            slotsMessage(asked === todayIn(cfg.timezone) ? t.noMoreToday : t.closed);
             return;
           }
           if (!bookable) {
-            slotsEl.innerHTML = '<span class="klar-muted">' + esc(t.noSlots + callUs()) + '</span>';
+            wantedSlot = '';
+            slotsMessage(t.noSlots + callUs());
             return;
           }
           slotsEl.innerHTML = slots
@@ -1641,6 +1881,7 @@
               );
             })
             .join('');
+          wantedSlot = '';
           if (wanted) {
             var stillFree = slots.some(function (slot) {
               return slot.available && slot.time === wanted;
@@ -1650,6 +1891,8 @@
           }
         })
         .catch(function (error) {
+          if (seq !== slotReq) return;
+          wantedSlot = '';
           warn(
             'availability request failed for booking slug "' + cfg.bookSlug + '" at ' + cfg.api +
               ' — no times can be offered.',
@@ -1657,13 +1900,14 @@
           );
           var failed = /availability (\d+)$/.exec(String(error && error.message));
           track('widget_failed', {
-            reason: failed || (error && error.message === 'network') ? 'availability' : 'availability_unreadable',
+            reason: error && error.timedOut ? 'availability_timeout'
+              : failed || (error && error.message === 'network') ? 'availability' : 'availability_unreadable',
             status: failed ? Number(failed[1]) : 0
           });
-          slotsEl.innerHTML =
-            '<span class="klar-muted">' +
-            esc((/ 404$/.test(error.message) ? t.bookingOff : t.slotsFailed) + callUs()) +
-            '</span>';
+          slotsMessage(
+            (error && error.timedOut ? t.slotsTimeout : / 404$/.test(error.message) ? t.bookingOff : t.slotsFailed) +
+              callUs()
+          );
         });
     }
 
@@ -1726,13 +1970,14 @@
         el('bdiet-consent-row').hidden = true;
         chosenSlot = '';
         loadSlots();
+        emit('klar:settled', {});
       });
     }
 
     if (cfg.book) {
       var today = todayIn(cfg.timezone);
       dateEl.min = today;
-      dateEl.max = plusDays(today, BOOKING_HORIZON_DAYS);
+      dateEl.max = plusDays(today, horizonDays);
       dateEl.value = today;
       for (var size = 1; size <= cfg.partyMax; size++) {
         var option = doc.createElement('option');
@@ -1746,17 +1991,22 @@
         var button = event.target.closest('button[data-klar-slot]');
         if (!button || button.disabled) return;
         chosenSlot = button.dataset.klarSlot;
+        wantedSlot = '';
         showBookErr('');
         markField(slotsEl, '');
         slotsEl.querySelectorAll('button').forEach(function (other) {
           other.classList.toggle('klar-on', other === button);
         });
       });
-      dateEl.addEventListener('change', loadSlots);
+      dateEl.addEventListener('change', function () {
+        userPicked = true;
+        loadSlots();
+      });
       /* The note follows the picker immediately, not on the availability answer
          coming back a moment later — a guest who steps 7 -> 8 and reads "no
          deposit" for a second has been told something untrue. */
       partyEl.addEventListener('change', function () {
+        userPicked = true;
         renderDeposit();
         loadSlots();
       });
@@ -1854,6 +2104,10 @@
           dietary_notes: diet || undefined,
           health_consent: diet ? dietConsent : undefined,
           health_consent_language: cfg.locale,
+          /* The language the confirmation link and the confirmation mail are
+             written in. Without it every mail followed the venue's default,
+             whichever language the guest booked in (WIDGET-10). */
+          language: cfg.locale,
           source: 'widget'
         };
 
@@ -1928,12 +2182,20 @@
           });
       }
 
+      /* The guest has an answer and the form is free again: lala-klar.js
+         waits for this before it re-mounts the form in another language. */
+      function settled() {
+        emit('klar:settled', {});
+      }
+
       function submitBooking(payload, depositSession) {
         booking = true;
         bookBtn.disabled = true;
         bookBtn.textContent = depositSession ? t.depositFinishing : t.booking;
-        win
-          .fetch(cfg.api + '/api/' + encodeURIComponent(cfg.bookSlug) + '/book', {
+        fetchWithTimeout(
+          win,
+          cfg.api + '/api/' + encodeURIComponent(cfg.bookSlug) + '/book',
+          {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(
@@ -1947,7 +2209,9 @@
                   )
                 : payload
             )
-          })
+          },
+          BOOK_TIMEOUT_MS
+        )
           .then(readJson)
           .then(function (result) {
             booking = false;
@@ -1956,37 +2220,50 @@
             if (!result.ok) {
               warn('booking rejected for "' + cfg.bookSlug + '" (' + result.status + ').', result.body);
               track('booking_failed', { status: result.status, error_code: result.body.code || null });
-              /* The API returns per-field messages — show them, they are more
-               * useful than the summary. */
-              var fields = result.body.fields;
-              var detail = fields
-                ? Object.keys(fields)
-                    .map(function (key) {
-                      return /invalid phone/i.test(fields[key]) ? t.badPhone : fields[key];
-                    })
-                    .join(' · ')
-                : '';
-              showBookErr(detail || result.body.error || t.generic + callUs());
-              if (result.body.code === 'SLOT_TAKEN') loadSlots();
+              var message = bookRefusalText(result.status, result.body, t);
+              /* A 5xx can land either side of the write, so it is a lost
+                 answer, not a refusal to correct. */
+              if (result.status >= 500 && result.body.code !== 'VERIFICATION_EMAIL_FAILED') {
+                message = t.bookUnreadable + ' ' + t.bookCheckEmail;
+              }
+              showBookErr(message + (result.body.fields ? '' : callUs()));
+              if (refusalStalesGrid(result.status, result.body)) loadSlots();
+              settled();
               return;
             }
-            /* 202: the venue asks the guest to prove the address first. Nothing
-               is booked yet, so this is NOT the "booked" panel. Before this
-               branch existed the 202 fell through to showBookOk and the guest
-               was told "Pöytä varattu" for a table that did not exist. */
-            if (result.status === 202 && result.body.status === 'verification_required') {
+            /* 202: the venue asks the guest to prove the address first, and
+               nothing is booked until they press the link. The API answers 202
+               only for that, so any 202 is that panel — never "Table booked".
+               Before this branch existed the 202 fell through to showBookOk
+               and the guest was told "Pöytä varattu" for a table that did not
+               exist. */
+            if (result.status === 202) {
               showVerifyEmail(result.body.email || el('bemail').value.trim());
+              settled();
               return;
             }
-            showBookOk(payload.guest_name, result.body.booking || {});
+            /* "Booked" only on the API's own answer, which always carries the
+               booking. A 2xx without one is not the API (a captive portal, a
+               proxy) and it showed a tick and "Table booked" for nothing
+               (F-021, WIDGET-09). Whether anything was booked is unknown. */
+            if (!result.body.booking || typeof result.body.booking !== 'object') {
+              warn('a 2xx for "' + cfg.bookSlug + '" carried no booking.', result.body);
+              track('widget_failed', { reason: 'book_unreadable', status: result.status });
+              showBookErr(t.bookUnreadable + ' ' + t.bookCheckEmail + callUs());
+              settled();
+              return;
+            }
+            showBookOk(payload.guest_name, result.body.booking);
+            settled();
           })
           .catch(function (error) {
             booking = false;
             bookBtn.disabled = false;
             renderDeposit();
             warn('booking request failed for "' + cfg.bookSlug + '".', error);
-            track('widget_failed', { reason: 'book_network' });
-            showBookErr(t.generic + callUs());
+            track('widget_failed', { reason: error && error.timedOut ? 'book_timeout' : 'book_network' });
+            showBookErr((error && error.timedOut ? t.bookTimeout : t.bookNetwork) + ' ' + t.bookCheckEmail + callUs());
+            settled();
           });
       }
 
@@ -2044,6 +2321,60 @@
       }
 
       mount.klarResumeDeposit = resumeFromDeposit;
+
+      /* ---- what was typed survives a change of language ----
+         The site's EN/FI switch re-mounts this form in the other language
+         (js/lala-klar.js), and a re-mount used to be an empty form: the date,
+         the party, the chosen time and every field the guest had filled in,
+         gone without a word (klar-console audit 2026-11-19, WIDGET-17). The
+         old mount is asked for this snapshot just before it is replaced, and
+         the new one is handed it. `busy` and `done` are what the switch reads
+         to leave a form alone: a booking in flight would land its answer on a
+         detached node, and a confirmation on screen is the guest's record. */
+      mount.klarSnapshot = function () {
+        return {
+          busy: booking,
+          done: !el('book-ok').hidden,
+          date: dateEl.value,
+          party: partyEl.value,
+          slot: chosenSlot || wantedSlot,
+          userPicked: userPicked,
+          horizon: horizonDays,
+          name: el('bname').value,
+          phone: el('bphone').value,
+          dial: el('bphone-dial').value,
+          email: el('bemail').value,
+          requests: el('breq').value,
+          diet: el('bdiet').value,
+          dietConsent: el('bdiet-consent').checked,
+          more: !!el('bmore').open
+        };
+      };
+      var restore = mount.klarRestore || null;
+      mount.klarRestore = null;
+      if (restore) {
+        if (restore.horizon > 0) {
+          horizonDays = restore.horizon;
+          dateEl.max = plusDays(todayIn(cfg.timezone), horizonDays);
+        }
+        if (restore.date && restore.date >= dateEl.min) dateEl.value = restore.date;
+        if (restore.party && partyEl.querySelector('option[value="' + String(restore.party).replace(/"/g, '') + '"]')) {
+          partyEl.value = restore.party;
+        }
+        userPicked = !!restore.userPicked;
+        wantedSlot = restore.slot || '';
+        el('bname').value = restore.name || '';
+        el('bphone').value = restore.phone || '';
+        if (restore.dial) el('bphone-dial').value = restore.dial;
+        el('bemail').value = restore.email || '';
+        el('breq').value = restore.requests || '';
+        el('bdiet').value = restore.diet || '';
+        el('bdiet-consent-row').hidden = !(restore.diet || '').trim();
+        el('bdiet-consent').checked = !!restore.dietConsent && !!(restore.diet || '').trim();
+        if (restore.more) el('bmore').open = true;
+        renderDeposit();
+      }
+      mount.klarRestored = !!restore;
     }
 
     /* ---- lazy start: a visitor who never scrolls here pays for no request ---- */
@@ -2053,13 +2384,17 @@
       started = true;
       if (cfg.order) loadMenu();
       if (cfg.book) {
-        loadSlots(OPENING_SEARCH_DAYS);
+        /* A form carried over from the other language keeps the guest's date:
+           no opening search. */
+        loadSlots(mount.klarRestored ? 0 : OPENING_SEARCH_DAYS);
         /* A guest coming back from Stripe has already paid, so this runs on
            start rather than waiting for the section to be scrolled to. */
         if (mount.klarResumeDeposit) mount.klarResumeDeposit();
       }
     }
     mount.klarStart = start; /* so a nav link or a test can force it */
+    /* It was on screen a moment ago, in the other language. */
+    if (mount.klarRestored) start();
 
     if (win.IntersectionObserver) {
       var observer = new win.IntersectionObserver(
